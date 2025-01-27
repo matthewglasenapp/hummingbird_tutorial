@@ -1,4 +1,4 @@
-# colibri_tutorial
+# Hummingbird/Colibri Tutorial
 Tutorial for Hummingbird Colibri 
 
 The syntax used to navigate the Hummingbird cluster is mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. 
