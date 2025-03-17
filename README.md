@@ -259,7 +259,7 @@ The array job above specifies 8 CPUs per array task. On the 128x24 Hummingbird p
 You can run an interactive job using the ```srun``` commmand. This is great for debugging 
 
 ```
-srun --pty --partition=lab-colibri --mem=20G --ntasks=1 --cpus-per-task=8 --time=1-00:00:00 --qos=pi-jkoc --account=pi-jkoc --job-name=debug /bin/bash/
+srun --pty --partition=lab-colibri --mem=20G --ntasks=1 --cpus-per-task=8 --time=1-00:00:00 --qos=pi-jkoc --account=pi-jkoc --job-name=debug /bin/bash
 ```
 
 ## 4. Efficiency
