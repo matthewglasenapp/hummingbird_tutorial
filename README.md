@@ -11,7 +11,7 @@ Learn more about this at:
 If not on the campus WiFi, you will need to be connected to the campus VPN. 
 
 ```
-ssh mglasena@hb.ucsc.edu
+ssh <cruzid>@hb.ucsc.edu
 ```
 
 After connecting to Hummingbird, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code/scripts on the login node. It will slow it down for all users. 
