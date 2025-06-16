@@ -7,7 +7,16 @@ Learn more about this at:
 1. https://hummingbird.ucsc.edu/
 2. https://login.scg.stanford.edu/tutorials/job_scripts/
 
-## 1. Basic slurm commands 
+## 1. Login
+If not on the campus WiFi, you will need to be connected to the campus VPN. 
+
+```
+ssh mglasena@hb.ucsc.edu
+```
+
+After connecting to Hummingbird, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code/scripts on the login node. It will slow it down for all users. 
+
+## 2. Basic slurm commands 
 Check the Hummingbird Queue to see what jobs are currently running. 
 
 ```
@@ -230,7 +239,7 @@ JobId=407851 JobName=genotype_d214
 
 You can see that I have set a time limit of 7-00:00:00 for this job. I requested 24 CPUs and 120G of RAM. The slurm script I submitted was /hb/scratch/mglasena/urchin_seq_2024/d214_haplotypecaller.sh. 
 
-## 2. Submit a Slurm job
+## 3. Submit a Slurm job
 
 To submit a job to run on the cluster, create a bash script called <job_name>.sh. Submit the job using the ```sbatch <job_name>.sh``` command. In your bash script, you need to include a header with arguments for Slurm. 
 
@@ -254,7 +263,7 @@ To submit a job to run on the cluster, create a bash script called <job_name>.sh
 The array job above specifies 8 CPUs per array task. On the 128x24 Hummingbird partitions, there is a 72 CPU core maximum per user, so only 9 array tasks will run at a time. Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as there's space for. You can specify to only run 9 array tasks at a time using ```#SBATCH --array=0-32%9```.
 
 
-## 3. Interactive Slurm Jobs
+## 4. Interactive Slurm Jobs
 
 You can run an interactive job using the ```srun``` commmand. This is great for debugging 
 
@@ -262,7 +271,7 @@ You can run an interactive job using the ```srun``` commmand. This is great for 
 srun --pty --partition=lab-colibri --mem=20G --ntasks=1 --cpus-per-task=8 --time=1-00:00:00 --qos=pi-jkoc --account=pi-jkoc --job-name=debug /bin/bash
 ```
 
-## 4. Efficiency
+## 5. Efficiency
 
 You can see how efficient your slurm jobs were using the following command: ```seff <job_id>```
 
