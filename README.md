@@ -79,6 +79,7 @@ Last login: Mon Jun 30 13:34:30 2025 from 128.114.226.87
 ```
 
 After connecting to Hummingbird, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code/scripts on the login node. It will slow it down for all users. 
+![compute_cluster](https://github.com/user-attachments/assets/cdbfeb86-011c-4b89-85cf-e19cf8bf67e4)
 
 When you log in to Hummingbird, you are automatically taken to your home directory. To see the path of your working directory, use the pwd command, which stands for "print working directory."
 
