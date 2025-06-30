@@ -5,17 +5,19 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
 
 ## Table of Contents
 
-- [1. Login](#1-login)
-- [2. Basic slurm commands](#2-basic-slurm-commands)
-- [3. Submit a Slurm job](#3-submit-a-slurm-job-dont-test-these-commands-now)
-  - [3.1 Create a slurm script](#31-create-a-slurm-script)
-  - [3.2 Submit the slurm script](#32-submit-the-slurm-script)
-  - [3.3 Cancel a slurm job](#33-cancel-a-slurm-job)
-- [4. Interactive Slurm Jobs](#4-interactive-slurm-jobs)
-- [Software on Hummingbird](#software-on-hummingbird)
-- [File Transfer](#file-transfer)
-- [5. Efficiency](#5-efficiency)
-- [Colibiri Partition](#colibiri-partition)
+## Table of Contents
+
+- [Login](#login)  
+- [Basic slurm commands](#basic-slurm-commands)  
+- [Submit a Slurm job (don't test these commands now)](#submit-a-slurm-job-dont-test-these-commands-now)  
+  - [Create a slurm script](#create-a-slurm-script)  
+  - [Submit the slurm script](#submit-the-slurm-script)  
+  - [Cancel a slurm job](#cancel-a-slurm-job)  
+- [Interactive Slurm Jobs](#interactive-slurm-jobs)  
+- [Software on Hummingbird](#software-on-hummingbird)  
+- [File Transfer](#file-transfer)  
+- [Efficiency](#efficiency)  
+- [Colibri Partition](#colibri-partition)  
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
 
