@@ -1,5 +1,5 @@
 # Hummingbird Tutorial
-Matt's tutorial for UCSC's Hummingbird HPC cluster
+Matt's tutorial for UCSC's Hummingbird HPC cluster.
 
 ## Table of Contents
 
@@ -298,7 +298,7 @@ squeue
        397752_2694 lab-colib ukraine_ ogarci12  R      38:53      1 hbnode-40
 ```
 
-You can check the status of only your jobs (queued and running) with ```squeue -u <username>```
+Check the status of jobs by users (queued and running) with ```squeue -u <username>```
 
 ```
 squeue -u mglasena
@@ -310,7 +310,9 @@ squeue -u mglasena
             407851    128x24 genotype mglasena  R 5-21:24:31      1 hbnode-17
 ```
 
-My job (id: 407851, name: genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17. Let's get more detail about this job using ```scontrol show job <job_id>```
+My job (id: 407851, name: genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17, which is part of the 128x24 partition. Let's get more detail about this job using ```scontrol show job```.
+
+```scontrol show job <job_id>```
 
 ```
 scontrol show job 407851
