@@ -396,7 +396,7 @@ You can cancel a running job at any moment using ```scancel <job_id>```
 
 If you accidentally run a job on the login node by mistake, you can kill the process with Ctl + c or exiting the shell window (automatically closes connection). 
 
-## Interactive Slurm Jobs
+## Interactive Slurm Jobs (Please don't test this now)
 
 You can run an interactive job using the ```srun``` commmand. This is great for debugging 
 
