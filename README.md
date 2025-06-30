@@ -7,17 +7,16 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
 
 ## Table of Contents
 
-- [Login](#login)  
+- [Logging In](#logging-in)  
 - [Basic slurm commands](#basic-slurm-commands)  
 - [Submit a Slurm job (don't test these commands now)](#submit-a-slurm-job-dont-test-these-commands-now)  
   - [Create a slurm script](#create-a-slurm-script)  
   - [Submit the slurm script](#submit-the-slurm-script)  
   - [Cancel a slurm job](#cancel-a-slurm-job)  
 - [Interactive Slurm Jobs](#interactive-slurm-jobs)  
-- [Software on Hummingbird](#software-on-hummingbird)  
-- [File Transfer](#file-transfer)  
 - [Efficiency](#efficiency)  
-- [Colibri Partition](#colibri-partition)  
+- [Colibiri Partition](#colibiri-partition)  
+
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
 
