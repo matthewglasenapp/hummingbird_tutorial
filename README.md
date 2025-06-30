@@ -1,6 +1,17 @@
 # Hummingbird Tutorial
 Matt's tutorial for UCSC's Hummingbird HPC cluster
 
+## Table of Contents
+
+- [1. Login](#1-login)
+- [2. Basic slurm commands](#2-basic-slurm-commands)
+- [3. Submit a Slurm job](#3-submit-a-slurm-job-dont-test-these-commands-now)
+  - [3.1 Create a slurm script](#31-create-a-slurm-script)
+  - [3.2 Submit the slurm script](#32-submit-the-slurm-script)
+  - [3.3 Cancel a slurm job](#33-cancel-a-slurm-job)
+- [4. Interactive Slurm Jobs](#4-interactive-slurm-jobs)
+- [5. Efficiency](#5-efficiency)
+
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
 
 We interact with Hummingbird via the command line interface using UNIX commands. UNIX is an operating system that includes a collection of built-in tools and commands. Here is a great commandline tutorial if you have no prior experience: https://www.codecademy.com/learn/learn-the-command-line.
