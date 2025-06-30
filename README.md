@@ -1,11 +1,18 @@
 # Hummingbird/Colibri Tutorial
 Tutorial for Hummingbird Colibri 
 
-The syntax used to navigate the Hummingbird cluster is mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. 
+The syntax used to navigate the Hummingbird cluster is mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. There is tons of content on slurm on the internet.
 
-Learn more about this at:
+Learn more about slurm at:
 1. https://hummingbird.ucsc.edu/
 2. https://login.scg.stanford.edu/tutorials/job_scripts/
+3. ChatGPT
+
+If you are a regular user, you should join the Hummingbird Slack Community: https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email
+
+The Humminbird team also has weekly office hours on Thursday from 1:00 PM - 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
+
+There are example scripts on Hummingbird located at ```/hb/software/scripts```
 
 ## 1. Login
 If not on the campus WiFi, you will need to be connected to the campus VPN. 
@@ -15,6 +22,28 @@ ssh <cruzid>@hb.ucsc.edu
 ```
 
 After connecting to Hummingbird, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code/scripts on the login node. It will slow it down for all users. 
+
+Let's learn more about the cluster. 
+
+``` sinfo ```
+
+```
+PARTITION        AVAIL  TIMELIMIT  NODES  STATE NODELIST
+build               up   infinite      1   idle hbnode-05
+instruction         up   12:00:00      3   idle hbnode-[03-05]
+128x24*             up   infinite     15    mix hbnode-[06,09-18,20-23]
+128x24*             up   infinite      3  alloc hbnode-[07-08,19]
+256x44              up   infinite      1    mix hbnode-25
+96x24gpu4           up   infinite      1    mix hbnode-24
+512x64-ib           up   infinite      1    mix hbnode-38
+512x64-ib           up   infinite      8  alloc hbnode-[29-36]
+512x64-ib           up   infinite      4   idle hbnode-[37,39-41]
+lab-colibri         up   infinite      1    mix hbnode-38
+lab-colibri         up   infinite      1   idle hbnode-39
+lab-colibri-hmem    up   infinite      1   idle hbnode-40
+```
+
+The different partitions are listed. 
 
 ## 2. Basic slurm commands 
 Check the Hummingbird Queue to see what jobs are currently running. 
@@ -239,7 +268,30 @@ JobId=407851 JobName=genotype_d214
 
 You can see that I have set a time limit of 7-00:00:00 for this job. I requested 24 CPUs and 120G of RAM. The slurm script I submitted was /hb/scratch/mglasena/urchin_seq_2024/d214_haplotypecaller.sh. 
 
-## 3. Submit a Slurm job
+## 3. Submit a Slurm job (don't test these commands now)
+
+### 3.1 Create a slurm script. 
+
+Let's use the nano text editor to 
+
+```nano <script_name>.sh```
+
+```
+#!/bin/bash
+#SBATCH --job-name=test
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=<cruzid>@ucsc.edu
+#SBATCH --output=test_%J.out
+#SBATCH --error=test_%J.err
+#SBATCH --partition=128x24
+#SBATCH --nodes=1
+#SBATCH --mem=40G   
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=12
+#SBATCH --time=1-0
+```
+
+### 3.2 Submit the slurm script
 
 To submit a job to run on the cluster, create a bash script called <job_name>.sh. Submit the job using the ```sbatch <job_name>.sh``` command. In your bash script, you need to include a header with arguments for Slurm. 
 
@@ -262,6 +314,11 @@ To submit a job to run on the cluster, create a bash script called <job_name>.sh
 
 The array job above specifies 8 CPUs per array task. On the 128x24 Hummingbird partitions, there is a 72 CPU core maximum per user, so only 9 array tasks will run at a time. Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as there's space for. You can specify to only run 9 array tasks at a time using ```#SBATCH --array=0-32%9```.
 
+### 3.3 Cancel a slurm job
+
+You can cancel a running job at any moment using ```scancel <job_id>```
+
+If you accidentally run a job on the login node by mistake, you can kill the process with Ctl + c or exiting the shell window (automatically closes connection). 
 
 ## 4. Interactive Slurm Jobs
 
