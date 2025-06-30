@@ -36,7 +36,7 @@ You can monitor cluster usage at https://hummingbird.ucsc.edu/current-usage/
 
 There are example slurm scripts on Hummingbird located at ```/hb/software/scripts```
 
-## 1. Login
+## Logging In
 If not on the campus WiFi, you will need to be connected to the campus VPN. 
 
 To log in to hummingbird, first open the terminal application (Mac users) or PuTTY (Windows users). We will use the ssh command to access Hummingbird, which stands for secure shell and provides a secure connection between your computer and the Hummingbird server. To login, you will use the following command:
@@ -133,7 +133,7 @@ lab-colibri-hmem    up   infinite      1   idle hbnode-40
 
 The different partitions are listed. Partitions are nodes with different configurations. 
 
-## 2. Basic slurm commands 
+## Basic slurm commands 
 Check the Hummingbird Queue to see what jobs are currently running. 
 
 ```
@@ -358,9 +358,9 @@ JobId=407851 JobName=genotype_d214
 
 You can see that I have set a time limit of 7-00:00:00 for this job. I requested 24 CPUs and 120G of RAM. The slurm script I submitted was /hb/scratch/mglasena/urchin_seq_2024/d214_haplotypecaller.sh. 
 
-## 3. Submit a Slurm job (don't test these commands now)
+## Submit a Slurm job (don't test these commands now)
 
-### 3.1 Create a slurm script. 
+### Create a slurm script. 
 
 Let's use the nano text editor to 
 
@@ -381,7 +381,7 @@ Let's use the nano text editor to
 #SBATCH --time=1-0
 ```
 
-### 3.2 Submit the slurm script
+### Submit the slurm script
 
 Submit the job using the ```sbatch <slurm_script>``` command.
 
@@ -389,13 +389,13 @@ Submit the job using the ```sbatch <slurm_script>``` command.
 sbatch test.sh
 ```
 
-### 3.3 Cancel a slurm job
+### Cancel a slurm job
 
 You can cancel a running job at any moment using ```scancel <job_id>```
 
 If you accidentally run a job on the login node by mistake, you can kill the process with Ctl + c or exiting the shell window (automatically closes connection). 
 
-## 4. Interactive Slurm Jobs
+## Interactive Slurm Jobs
 
 You can run an interactive job using the ```srun``` commmand. This is great for debugging 
 
@@ -514,7 +514,7 @@ There are Desktop applications with nice graphics interaces for file transfer/ma
 
 For larger data transfers, see Hummingbird's Globus reccomendations: https://hummingbird.ucsc.edu/documentation/
 
-## 5. Efficiency
+## Efficiency
 
 You can see how efficient your slurm jobs were using the following command: ```seff <job_id>```
 
