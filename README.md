@@ -43,7 +43,7 @@ lab-colibri         up   infinite      1   idle hbnode-39
 lab-colibri-hmem    up   infinite      1   idle hbnode-40
 ```
 
-The different partitions are listed. 
+The different partitions are listed. Partitions are nodes with different configurations. 
 
 ## 2. Basic slurm commands 
 Check the Hummingbird Queue to see what jobs are currently running. 
