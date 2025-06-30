@@ -12,7 +12,7 @@ If you are a regular user, you should join the Hummingbird Slack Community: http
 
 The Humminbird team also has weekly office hours on Thursday from 1:00 PM - 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
 
-There are example scripts on Hummingbird located at ```/hb/software/scripts```
+There are example slurm scripts on Hummingbird located at ```/hb/software/scripts```
 
 ## 1. Login
 If not on the campus WiFi, you will need to be connected to the campus VPN. 
