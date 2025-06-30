@@ -1,12 +1,16 @@
-# Hummingbird/Colibri Tutorial
-Tutorial for Hummingbird Colibri 
+# Hummingbird Tutorial
+Matt's tutorial for UCSC's Hummingbird HPC cluster
 
-The syntax used to navigate the Hummingbird cluster is mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. There is tons of content on slurm on the internet.
+A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
+
+We interact with Hummingbird via the command line interface using UNIX commands. UNIX is an operating system that includes a collection of built-in tools and commands. Here is a great commandline tutorial if you have no prior experience: https://www.codecademy.com/learn/learn-the-command-line.
+
+The commands used to submit and monitor jobs on Hummingbird are mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. There is tons of content on slurm on the internet.
 
 Learn more about slurm at:
-1. https://hummingbird.ucsc.edu/
-2. https://login.scg.stanford.edu/tutorials/job_scripts/
-3. ChatGPT
+1. Hummingbird homepage, https://hummingbird.ucsc.edu/, and Hummingbird Getting Started Page, https://hummingbird.ucsc.edu/getting-started/
+3. Stanford slurm tutorial: https://login.scg.stanford.edu/tutorials/job_scripts/
+4. ChatGPT
 
 If you are a regular user, you should join the Hummingbird Slack Community: https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email
 
@@ -19,11 +23,76 @@ There are example slurm scripts on Hummingbird located at ```/hb/software/script
 ## 1. Login
 If not on the campus WiFi, you will need to be connected to the campus VPN. 
 
+To log in to hummingbird, first open the terminal application (Mac users) or PuTTY (Windows users). We will use the ssh command to access Hummingbird, which stands for secure shell and provides a secure connection between your computer and the Hummingbird server. To login, you will use the following command:
+
 ```
-ssh <cruzid>@hb.ucsc.edu
+ssh <your_cruzid>@hb.ucsc.edu
+```
+
+Replace <your_cruzid> with your UCSC username in your command. You will be prompted to enter your password. For security measures, you will not be able to see the characters you are entering. Type your password and press enter.
+
+The following message should appear on your screen.
+
+```
+ _                               _             _     _         _
+| |                             (_)           | |   (_)       | |
+| |__  _   _ _ __ ___  _ __ ___  _ _ __   __ _| |__  _ _ __ __| |
+| '_ \| | | | '_ ` _ \| '_ ` _ \| | '_ \ / _` | '_ \| | '__/ _` |
+| | | | |_| | | | | | | | | | | | | | | | (_| | |_) | | | | (_| |
+|_| |_|\__,_|_| |_| |_|_| |_| |_|_|_| |_|\__, |_.__/|_|_|  \__,_|
+                                          __/ |
+                                        |    /
+                                        |___/
+-----------------------------------------------------------------------------
+!! POLICIES - READ !!
+** Faiure to adhere to these policies will result in job cancellation. **
+-----------------------------------------------------------------------------
+1) JOBS & QUEUES
+** YOU MUST USE THE SLURM BATCH SYSTEM TO RUN SOFTWARE **
+- 72 CPU core maximum per user
+- Always apply time limits to slurm script (#SBATCH --time=)
+- For non-exclusive access to a node apply BOTH memory & cpu limits
+
+2) DATA TRANSFERS
+- All data transfers can be done directly on hb.ucsc.edu or via Globus
+
+3) HOME QUOTA, SCRATCH & DATA POLICY
+- Disk quota per user (home):  1TB
+- /hb/scratch is not backed up and data older than 120 days may be deleted
+- Data and Backup Policy: https://hummingbird.sites.ucsc.edu/documentation/hummingbird-data-storage-and-backup-policy/
+
+4) GETTING HELP
+** Have questions? Need help? Want to speak to an expert? **
+- Join the Hummingbird Zoom-in Help Clinic Thursdays at 1PM PDT
+- https://ucsc.zoom.us/j/93463299124?pwd=RFZvZzlYSjIzNnoxblFsRUV6aTZGZz09 (UCSC login required)
+- Put in a ticket by emailing hummingbird@ucsc.edu
+-----------------------------------------------------------------------------
+** More information at https://hummingbird.ucsc.edu/ **
+-----------------------------------------------------------------------------
+** Join us on the Hummingbird-cluster Slack server!! **
+
+Join the community to get real-time support from your admins and collaborators.
+
+https://join.slack.com/t/ucschummingbi-lph3072/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg
+-----------------------------------------------------------------------------
+Last login: Mon Jun 30 13:34:30 2025 from 128.114.226.87
 ```
 
 After connecting to Hummingbird, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code/scripts on the login node. It will slow it down for all users. 
+
+When you log in to Hummingbird, you are automatically taken to your home directory. To see the path of your working directory, use the pwd command, which stands for "print working directory."
+
+```
+pwd
+```
+
+After running this command, /hb/home/<your_cruzid> will be printed to the terminal. This is your personal/home directory, where you can store files and data. Hummingbird users have a 1 TB storage quote in their home directory. I reccomend using /hb/home/ for longer-term storage, including stable files and software installs. 
+
+You'll want to work mostly in your scratch directory, at /hb/scratch/<cruz_id>, where the is no storage quota. This is a great location to test new scripts and to store intermediate files.
+
+```
+cd /hb/scratch/<your_cruzid>
+```
 
 Let's learn more about the cluster. 
 
