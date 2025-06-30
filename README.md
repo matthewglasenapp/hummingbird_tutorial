@@ -12,6 +12,8 @@ If you are a regular user, you should join the Hummingbird Slack Community: http
 
 The Humminbird team also has weekly office hours on Thursday from 1:00 PM - 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
 
+You can monitor cluster usage at https://hummingbird.ucsc.edu/current-usage/
+
 There are example slurm scripts on Hummingbird located at ```/hb/software/scripts```
 
 ## 1. Login
