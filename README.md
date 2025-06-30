@@ -3,6 +3,8 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
 
 ## Table of Contents
 
+## Table of Contents
+
 - [1. Login](#1-login)
 - [2. Basic slurm commands](#2-basic-slurm-commands)
 - [3. Submit a Slurm job](#3-submit-a-slurm-job-dont-test-these-commands-now)
@@ -10,7 +12,10 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
   - [3.2 Submit the slurm script](#32-submit-the-slurm-script)
   - [3.3 Cancel a slurm job](#33-cancel-a-slurm-job)
 - [4. Interactive Slurm Jobs](#4-interactive-slurm-jobs)
+- [Software on Hummingbird](#software-on-hummingbird)
+- [File Transfer](#file-transfer)
 - [5. Efficiency](#5-efficiency)
+- [Colibiri Partition](#colibiri-partition)
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
 
@@ -298,7 +303,7 @@ squeue
        397752_2694 lab-colib ukraine_ ogarci12  R      38:53      1 hbnode-40
 ```
 
-Check the status of jobs by users (queued and running) with ```squeue -u <username>```
+Check the status of a specific user's jobs (queued and running) with ```squeue -u <username>```
 
 ```
 squeue -u mglasena
@@ -359,7 +364,7 @@ You can see that I have set a time limit of 7-00:00:00 for this job. I requested
 
 Let's use the nano text editor to 
 
-```nano <script_name>.sh```
+```nano test.sh```
 
 ```
 #!/bin/bash
@@ -378,26 +383,11 @@ Let's use the nano text editor to
 
 ### 3.2 Submit the slurm script
 
-To submit a job to run on the cluster, create a bash script called <job_name>.sh. Submit the job using the ```sbatch <job_name>.sh``` command. In your bash script, you need to include a header with arguments for Slurm. 
+Submit the job using the ```sbatch <slurm_script>``` command.
 
 ```
-#!/bin/bash
-#SBATCH --job-name=genotype
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=mglasena@ucsc.edu
-#SBATCH --output=genotype_%A_%a.out
-#SBATCH --error=genotype_%A_%a.err
-#SBATCH --mem=32G
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
-#SBATCH --time=3-0
-#SBATCH --array=0-32%9
-#SBATCH --partition=lab-colibri
-#SBATCH --qos=pi-jkoc
-#SBATCH --account=pi-jkoc
+sbatch test.sh
 ```
-
-The array job above specifies 8 CPUs per array task. On the 128x24 Hummingbird partitions, there is a 72 CPU core maximum per user, so only 9 array tasks will run at a time. Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as there's space for. You can specify to only run 9 array tasks at a time using ```#SBATCH --array=0-32%9```.
 
 ### 3.3 Cancel a slurm job
 
@@ -410,8 +400,119 @@ If you accidentally run a job on the login node by mistake, you can kill the pro
 You can run an interactive job using the ```srun``` commmand. This is great for debugging 
 
 ```
-srun --pty --partition=lab-colibri --mem=20G --ntasks=1 --cpus-per-task=8 --time=1-00:00:00 --qos=pi-jkoc --account=pi-jkoc --job-name=debug /bin/bash
+salloc --partition=128x24 --mem=10G --ntasks=1 --cpus-per-task=4 --job-name=test
 ```
+
+## Software on Hummingbird
+There is a lot of pre-installed software on Hummingbird. Before installing a new software, check to see if it is already available:
+
+```
+module avail
+```
+
+```
+--------------------------------------------------- /hb/software/moduledeps/spack ---------------------------------------------------
+   adios2/2.9.2                 cfitsio/4.3.0    htslib/1.16                 opencv/4.8.0                  r/4.3.0
+   angsd/0.935                  cp2k/2023.2      htslib/1.17          (D)    openmpi/4.1.6                 root/6.24.06
+   armadillo/12.4.0             delly2/1.1.6     jags/4.3.0                  parallel-netcdf/1.12.3        salmon/1.10.2
+   bcftools/1.16                fftw/3.3.10      jellyfish/2.2.7             pcre/8.45                     samtools/1.16.1
+   bcl2fastq2/2.20.0.422 (D)    gate/9.1         lammps/20230802             pcre2/10.42                   samtools/1.17
+   beagle/5.4                   gdal/3.7.3       libpng/1.6.39               perl/5.32.1                   sqlite/3.43.2
+   berkeley-db/18.1.40          geant4/10.7.4    maker/3.01.04               perl/5.38.0                   sratoolkit/3.0.0
+   boost/1.55.0                 geos/3.12.0      netcdf-c/4.9.2              phyx/1.3.1             (D)    stacks/2.53
+   boost/1.83.0          (D)    gmake/4.3        netcdf-fortran/4.6.1        pmix/5.0.1             (D)    stringtie/2.2.1
+   bowtie/1.3.1-7               gsl/2.7.1        nlopt/2.7.0                 proj/9.2.1                    swig/4.1.1
+   bowtie2/2.5.1                hdf5/1.14.0      nwchem/7.2.0                psmc/2016-1-21                trimmomatic/0.39
+   bwa/0.7.17                   hmmer/3.4        ont-guppy/6.1.7             qualimap/2.2.1                vcftools/0.1.16  (D)
+
+----------------------------------------------------- /hb/software/modulefiles ------------------------------------------------------
+   admixture/1.3.0              galprop/57               mitofinder/1.4.2                repeatmasker/4.1.5
+   amber/24                     gatk/4.4.0.0             modkit/0.4.0                    rmblast/2.14.1
+   ant/1.10.10                  gaussian/09.D1.01        mosdepth/0.3.4                  rust/1.79.0
+   antlr/2.7.7                  gcat/1.0                 namd/2.12                       sambamba/0.8.2
+   aster/1.16                   gemma/0.98.5             ncbi/16.36.0                    seqkit/2.5.1
+   aws/2.13.15                  go/1.22.5                nco/5.3.2                       sfincs/2.1.1-cpu
+   bbftp/3.2.1                  gradle/8.4               necat/0.0.1                     shasta/0.12.0
+   bbtools/39.01                guppy/6.4.6-cpu          new-hmmer/3.4                   singularity-ce/singularity-ce.4.1.4
+   beast/2.1.4                  guppy/6.4.6-gpu   (D)    nextflow/24.10.4                slim/4.2.2
+   bedtools/2.26.0              hisat/2.1.0              ngsld/1.2.0                     smrtlink/8.0.0
+   blast/2.15.0                 iq-tree/2.2.2.6          nvidia-hpc-sdk/24.7             spades/4.1.0
+   bwa-mem2/2.2.1               java/8u151               openfoam/OpenFOAM-v2206         star/2.7.10b
+   ccache/4.10.2                jdk/17.0.7               orca/5.0.1                      structure/2.3.4
+   cellranger/2.2.0             jdk/21.0.4        (D)    orca/6.0.1                      swan/41.45.C
+   chrome/109.0.5414.119        julia/1.11.0             orca/6.1.0               (D)    swan/41.45.Z                        (D)
+   cuda/12.5.1                  lastz/1.04.00            paml/4.10.7                     trf/4.09.1
+   cuda/12.6             (D)    lastz/1.04.41     (D)    pandoc/2.14.2                   trimgalore/0.6.10
+   cufflinks/2.2.1              lftp/4.9.3               parallel/20200122               udunits/2.2.8
+   dorado/0.9.0                 lumpy/0.3.1              paraview/5.13.1-gpu             vg/1.12.1
+   dorado/0.9.1          (D)    mafft/7.520              paraview/5.13.1-swrender (D)    wtdbg2/2.5
+   ecosys/1.1                   magic-blast/1.7.2        perl/5.40.0              (D)    xbeach/r6057-mpi
+   edirect/062020               mash/2.3                 phast/1.5                       xbeach/r6057
+   eigensoft/8.0.0              matlab/2021b             picard/2.27.1                   xbeach/r6112-mpi
+   elai/1.21                    matlab/2023b      (D)    plink/1.09                      xbeach/r6112                        (D)
+   fastp/0.23.2                 migrate/3.6.11           protobuf/28.2                   xerces-c/3.3.0
+   flye/2.9.2                   miniconda3/3.12          quantumespresso/7.2
+   foldseek/8-ef4e960           minimap2/2.17            raxml-ng/1.2.0
+
+------------------------------------------------ /hb/software/moduledeps/miniconda3 -------------------------------------------------
+   agat/1.2.0               crpropa/3.2.1              hyphy/2.5.50            ngslca/1.0.5               rerconverge/0.3.0
+   angsd/0.940       (D)    cutadapt/4.4               hyphy/2.5.73     (D)    nwchem/7.2.2        (D)    roary/3.13.0
+   apcluster/1.4.13         delly/1.2.6                inla/23.09.09           odgi/0.8.6                 sage/10.3
+   bamdam/24dec14           demucs/4.0.1               intarna/3.4.0           orthofinder/2.5.5          salmon/1.10.3     (D)
+   bcftools/1.21     (D)    dendropy/4.6.1             kb-python/0.28.2        panaroo/1.3.4              samtools/1.21     (D)
+   bcl2fastq2/2.20.0        edta/2.2.x                 kraken/2.1.3            panaroo/1.5.1       (D)    seqtk/1.4
+   bifrost/1.1.4            fastq-screen/0.16.0        krakenuniq/1.0.4        pcangsd/1.36.1             snakemake/7.32.4
+   bowtie/2.5.4      (D)    fastqc/0.12.1              macs/3.0.1              pggb/0.6.0                 sniffles/2.3.2
+   braker/2.1.6             freeclimber/0.4.0          manta/1.6.0             phyx/1.1.1                 stacks/2.65       (D)
+   busco/5.4.7              gffutils/0.12.0            metaphlan/4.1.1         prokka/1.14.5              tidyverse/2.0.0
+   buscophylo/1.3           gmt/6.4.0                  metawibele/0.4.7        pyscf/2.7.0                toga/1.1.7
+   cactus/2.8.4             gromacs/2024.2.gpu         mitohifi/3.2.2          qiime2/2022.2              trinity/2.15.1
+   climlab/0.8.2            gromacs/2024.2      (D)    moseq2/1.3.0            qiime2/2024.10      (D)    vcftools/0.1.16
+   climlab/0.9.1     (D)    gubbins/3.4                multiqc/1.27            quast/5.2.0
+   coinfinder/1.2.1         heasoft/6.33.2             nanoreviser/1.0         r/4.4.1             (D)
+   cp2k/2024.1       (D)    humann/3.9                 newick_utils/1.6        repeatmodeler/2.0.5
+
+----------------------------------------------------- /opt/ohpc/pub/modulefiles -----------------------------------------------------
+   autotools       gnu13/13.2.0      intel/2024.0.0   (D)    ohpc       (L)    pmix/4.2.9      ucx/1.17.0
+   cmake/3.24.2    hwloc/2.11.1      intel/2024.2.0          os                prun/2.2        valgrind/3.23.0
+   gnu12/12.2.0    intel/2023.2.1    libfabric/1.18.0        papi/6.0.0        spack/0.22.2
+
+  Where:
+   D:  Default Module
+   L:  Module is loaded
+
+If the avail list is too long consider trying:
+
+"module --default avail" or "ml -d av" to just list the default modules.
+"module overview" or "ml ov" to display the number of modules for each name.
+
+Use "module spider" to find all possible modules and extensions.
+Use "module keyword key1 key2 ..." to search for all possible modules matching any of the "keys".
+```
+
+If you don't see the software you need, you can install it yourself using conda, mamba, pip, etc. If you are having trouble installing it, you can submit a ticket by emailing hummingbird@ucsc.edu. It is okay to compile software on the login node. 
+
+Here is an example command for loading the bcftools module:
+```
+module load bcftools/1.16
+```
+
+## File Transfer
+For transferring files to and from Hummingbird, you can use ```scp``` or ```sftp```. Note that if you are not on the campus WiFi, you must be connected to the VPN
+
+Example of a transfer from Matt's Desktop to Hummingbird:
+```
+scp /Users/matt/Desktop/test.txt mglasena@hb.ucsc.edu:/hb/scratch/mglasena/
+```
+
+Example of a transfer from Hummingbird to Matt's Desktop:
+```
+scp mglasena@hb.ucsc.edu:/hb/scratch/mglasena/test.txt /Users/matt/Desktop/
+```
+
+There are Desktop applications with nice graphics interaces for file transfer/management (e.g., Cyberduck: https://cyberduck.io/)
+
+For larger data transfers, see Hummingbird's Globus reccomendations: https://hummingbird.ucsc.edu/documentation/
 
 ## 5. Efficiency
 
@@ -443,4 +544,27 @@ Memeory Utilized: Array task 150 of slurm job 398476 only used 26.46 GB of RAM. 
 CPU Efficiency is the amount of time the requested CPUs were actively doing work relative to the amount of time they were idle. 
 In this case, 80% of the reserved CPU time was actively used for computations, and the remaining ~20% was idle. This is fairly efficient, but next time I could consider requesting slightly fewer CPUs. Note that CPU usage can vary drastically during the job if you have multiple commands in your slurm job. Efficiency will be low when only one or a few steps require many CPU, and the other steps cannot make use of multiple CPU. 
 
+## Colibiri Partition
+
+Our lab has some private nodes with increased CPU and RAM. We have two nodes on the partition lab-colibri (hbnode-38, hbnode-39) and one high memory node on the partition lab-colibri-hmem (hbnode-40). hbnode-38 and hbnode-39 have 112 CPUs and 1000GB RAM each. hbnode-40 is a high memory node with 112 CPU and 2000GB RAM.
+
+IMPORTANT: On the 128x24 Hummingbird partitions, there are hard-coded CPU limits (no more than 72 CPU per user at a time). There are no hard-coded limits on the lab-colibri and lab-colibri-hmem partitions. Please be considerate of how much compute resources you are allocating at a single time. If the nodes are idle and you have a high priority job, feel free to allocate a lot of resources. If there are many people in the queue and your job is not time-sensitive, try to occupy fewer CPUs to share the resource!
+
+Note on Array Jobs: If you submit an array job (advanced topic for next week) on the 128x24 partition, the job scheduler will regulate the number of tasks allowed to run simultaneously. Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as possible given the available CPU/RAM. You can specify the number of simultaneous array tasks like this: 
+```#SBATCH --array=0-999%10```
+This says create 1,000 array tasks (0-based indexing), but only run 10 tasks at a time. 
+
+To target hbnode-38 and/or hbnode-39, including the following in your slurm script header. 
+```
+#SBATCH --partition=lab-colibri
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+```
+
+hbnode-40 is on a different partition, ```lab-colibri-hmem```. To target node 40, include the following in your slurm script header.
+```
+#SBATCH --partition=lab-colibri-hmem
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+```
 
