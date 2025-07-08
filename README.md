@@ -583,7 +583,7 @@ At some point, you will want to run a
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
 #SBATCH --time=3-0
-#SBATCH --array=0-99
+#SBATCH --array=1-100
 #SBATCH --partition=lab-colibri
 #SBATCH --qos=pi-jkoc
 #SBATCH --account=pi-jkoc
@@ -594,73 +594,76 @@ export array_id
 python3 -u process_ont.py
 ```
 
-In your python script, you can extract the array ID (integer) and use it to index a list, dictionary, etc. 
+In your python script, you can extract the array ID (integer) and use it to index a list, dictionary, etc. If I had a dictionary of samples to process, I just have to specify the total number of samples I have in the slurm script. 
+
 
 ```
-array_id = os.environ["array_id"]
-```
+import os
 
-If I had a dictionary of samples to process, I just have to specify the total number of samples I have in the slurm script. 
+array_id = int(os.environ["array_id"])
 
-```
 samples = {
-"sample1": ["data"],
-"sample2": ["data"],
+    "sample1": ["data"],
+    "sample2": ["data"],
+    # ...
 }
+
+sample_name = list(samples.keys())[array_id]
+print(f"Processing {sample_name}")
+
 ```
+
+Make sure the --array=0-N in your SLURM script matches the number of items you're looping over.
 
 ## Permissions
 
-I am going to create a bash script that simply prints "Hello World" using the echo command. 
+Say you write a quick bash script that prints "Hello World" using the echo command. 
 
 ```
-(base) mglasena-macbookpro:Desktop matt$ pwd
-/Users/matt/Desktop
-(base) mglasena-macbookpro:Desktop matt$ echo 'echo "Hello World"' > test.sh
+echo 'echo "Hello World"' > test.sh
 ```
 
-When I run the script, it says, "Permission Denied."
+Trying to run it directly fails:
 
 ```
-(base) mglasena-macbookpro:Desktop matt$ ./test.sh
--bash: ./test.sh: Permission denied
+./test.sh
+# -bash: ./test.sh: Permission denied
 ```
 
-To understand why, let's look at the permissions for this file:
+To understand why, let's check the permissions for this file using ```ls -lah```
 
 ```
-(base) mglasena-macbookpro:Desktop matt$ ls -lah test.sh
+ls -lah test.sh
 -rw-r--r-- 1 matt staff 19 Jul  7 16:44 test.sh
 ```
+
+Permissions are organized by owner, group, others, in the format of read (r), write (w), execute (x). 
 
 This file does not have executable permissions. Let's change that using ```chmod```.
 
 ```
 
-(base) mglasena-macbookpro:Desktop matt$ chmod a+x test.sh
-(base) mglasena-macbookpro:Desktop matt$ ls -lah test.sh
+chmod a+x test.sh
+ls -lah test.sh
 -rwxr-xr-x 1 matt staff 19 Jul  7 16:44 test.sh
 ```
 
 Now it is executable and will run!
 
 ```
-(base) mglasena-macbookpro:Desktop matt$ ./test.sh
+./test.sh
 Hello World
-(base) mglasena-macbookpro:Desktop matt$ 
 ```
 
 ## Conda
 
-Let's say you need a software program that's not offered on Hummingbird. You can install your own software using conda. 
-
-On Hummingbird, load miniconda3, a lightweight Conda distribution. 
+If the software you want isn't pre-installed on your cluster, conda is a good fallback. On Hummingbird, load miniconda first:
 
 ```
 module load miniconda3
 ```
 
-Create a new virtual environemnt using ```conda create```
+Create a new environemnt using ```conda create```
 
 ```
 conda create -y -n analysis
@@ -673,17 +676,17 @@ Activate the module using ```conda activate```
 conda activate analysis
 ```
 
-Check if your software is on anaconda.org/bioconda!
+Check if your software is available from Bioconda:
 
 <img width="1014" alt="pbmm2_bioconda" src="https://github.com/user-attachments/assets/b5edb75e-d65d-45c4-9c5a-073389857cf7" />
 
-Use their package recipe to install!
+If so, use their package recipe to install!
 
 ```
 conda install bioconda::pbmm2
 ```
 
-To deactivate, using ```conda deactivate```
+To deactivate the environment, use ```conda deactivate```
 
 Other useful conda commands:
 ```
