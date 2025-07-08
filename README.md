@@ -3,10 +3,6 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
 
 ## Table of Contents
 
-## Table of Contents
-
-## Table of Contents
-
 - [Logging In](#logging-in)  
 - [Basic slurm commands](#basic-slurm-commands)  
 - [Submit a Slurm job (don't test these commands now)](#submit-a-slurm-job-dont-test-these-commands-now)  
@@ -15,7 +11,10 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
   - [Cancel a slurm job](#cancel-a-slurm-job)  
 - [Interactive Slurm Jobs](#interactive-slurm-jobs)  
 - [Efficiency](#efficiency)  
-- [Colibiri Partition](#colibiri-partition)  
+- [Colibiri Partition](#colibiri-partition)
+- [Array Jobs](#array-jobs)
+- [Permissions](#permissions)
+- [Conda](#Conda)
 
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
@@ -568,4 +567,133 @@ hbnode-40 is on a different partition, ```lab-colibri-hmem```. To target node 40
 #SBATCH --qos=pi-jkoc
 #SBATCH --account=pi-jkoc
 ```
+
+## Array Jobs
+
+At some point, you will want to run a 
+
+```
+#!/bin/bash
+#SBATCH --job-name=process_ont
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=mglasena@ucsc.edu
+#SBATCH --output=process_ont_%A_%a.out
+#SBATCH --error=process_ont_%A_%a.err
+#SBATCH --mem=40G
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=6
+#SBATCH --time=3-0
+#SBATCH --array=0-99
+#SBATCH --partition=lab-colibri
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+
+array_id=$SLURM_ARRAY_TASK_ID
+export array_id
+
+python3 -u process_ont.py
+```
+
+In your python script, you can extract the array ID (integer) and use it to index a list, dictionary, etc. 
+
+```
+array_id = os.environ["array_id"]
+```
+
+If I had a dictionary of samples to process, I just have to specify the total number of samples I have in the slurm script. 
+
+```
+samples = {
+"sample1": ["data"],
+"sample2": ["data"],
+}
+```
+
+## Permissions
+
+I am going to create a bash script that simply prints "Hello World" using the echo command. 
+
+```
+(base) mglasena-macbookpro:Desktop matt$ pwd
+/Users/matt/Desktop
+(base) mglasena-macbookpro:Desktop matt$ echo 'echo "Hello World"' > test.sh
+```
+
+When I run the script, it says, "Permission Denied."
+
+```
+(base) mglasena-macbookpro:Desktop matt$ ./test.sh
+-bash: ./test.sh: Permission denied
+```
+
+To understand why, let's look at the permissions for this file:
+
+```
+(base) mglasena-macbookpro:Desktop matt$ ls -lah test.sh
+-rw-r--r-- 1 matt staff 19 Jul  7 16:44 test.sh
+```
+
+This file does not have executable permissions. Let's change that using ```chmod```.
+
+```
+
+(base) mglasena-macbookpro:Desktop matt$ chmod a+x test.sh
+(base) mglasena-macbookpro:Desktop matt$ ls -lah test.sh
+-rwxr-xr-x 1 matt staff 19 Jul  7 16:44 test.sh
+```
+
+Now it is executable and will run!
+
+```
+(base) mglasena-macbookpro:Desktop matt$ ./test.sh
+Hello World
+(base) mglasena-macbookpro:Desktop matt$ 
+```
+
+## Conda
+
+Let's say you need a software program that's not offered on Hummingbird. You can install your own software using conda. 
+
+On Hummingbird, load miniconda3, a lightweight Conda distribution. 
+
+```
+module load miniconda3
+```
+
+Create a new virtual environemnt using ```conda create```
+
+```
+conda create -y -n analysis
+```
+The -n flag specifies the name for the conda environment. The -y flag specifies "yes" to all command prompts. 
+
+Activate the module using ```conda activate```
+
+```
+conda activate analysis
+```
+
+Check if your software is on anaconda.org/bioconda!
+
+<img width="1014" alt="pbmm2_bioconda" src="https://github.com/user-attachments/assets/b5edb75e-d65d-45c4-9c5a-073389857cf7" />
+
+Use their package recipe to install!
+
+```
+conda install bioconda::pbmm2
+```
+
+To deactivate, using ```conda deactivate```
+
+Other useful conda commands:
+```
+# List all environments!
+conda info --envs
+
+# Remove a conda environment
+conda remove --name <env_name> --all
+```
+
+
+
 
