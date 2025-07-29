@@ -15,6 +15,7 @@ Matt's tutorial for UCSC's Hummingbird HPC cluster.
 - [Array Jobs](#array-jobs)
 - [Permissions](#permissions)
 - [Conda](#Conda)
+- [Array Jobs (pt2)](#array-jobs-(pt2))
 
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress. 
@@ -697,6 +698,6 @@ conda info --envs
 conda remove --name <env_name> --all
 ```
 
-
+## Array Jobs (pt2)
 
 
