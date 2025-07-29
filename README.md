@@ -398,7 +398,7 @@ If you accidentally run a job on the login node by mistake, you can kill the pro
 
 ## Interactive Slurm Jobs (Please don't test this now)
 
-You can run an interactive job using the ```srun``` commmand. This is great for debugging 
+You can run an interactive job using the ```salloc``` commmand. This is great for debugging 
 
 ```
 salloc --partition=128x24 --mem=10G --ntasks=1 --cpus-per-task=4 --job-name=test
@@ -699,5 +699,235 @@ conda remove --name <env_name> --all
 ```
 
 ## Array Jobs (pt2)
+Array jobs are a powerful feature of SLURM that let you run many similar jobs in parallel, each with a different input or task index. Instead of writing and submitting 30 separate SLURM scripts or running one slurm script with a for loop, you can submit one script with --array=0-29 and let SLURM manage the parallelism.
+
+This is especially useful when you need to run the same analysis (e.g., samtools view, python3 script.py) across multiple input files or samples.
+
+For example, let's say I have 30 mapped BAM files that I want to filter to only include primary alignments from chromosome 6 with MAPQ > 30. 
+
+```
+pwd
+```
+```
+/hb/scratch/mglasena/hb_tutorial
+```
+
+```
+ls -lah *.bam
+```
+```
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 401M Jul 29 11:34 HG002.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 293M Jul 29 11:34 HG003.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 213M Jul 29 11:34 HG004.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 192M Jul 29 11:34 HG005.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 347M Jul 29 11:34 HG01106.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 362M Jul 29 11:34 HG01258.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 582K Jul 29 11:34 HG01891.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 297M Jul 29 11:34 HG01928.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 246M Jul 29 11:34 HG02055.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 240M Jul 29 11:34 HG02630.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 173M Jul 29 11:34 HG03492.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  99M Jul 29 11:34 HG03579.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  68M Jul 29 11:34 IHW09021.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 134M Jul 29 11:34 IHW09049.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  44M Jul 29 11:34 IHW09071.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 151M Jul 29 11:34 IHW09117.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  29M Jul 29 11:34 IHW09118.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 217M Jul 29 11:34 IHW09122.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 125M Jul 29 11:34 IHW09125.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  65M Jul 29 11:34 IHW09175.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 100M Jul 29 11:34 IHW09198.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 116M Jul 29 11:34 IHW09200.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 115M Jul 29 11:34 IHW09224.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  14M Jul 29 11:34 IHW09245.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  68M Jul 29 11:34 IHW09251.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 176M Jul 29 11:34 IHW09359.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  33M Jul 29 11:34 IHW09364.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr  76M Jul 29 11:34 IHW09409.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 135M Jul 29 11:34 NA19240.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 336M Jul 29 11:34 NA20129.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 292M Jul 29 11:34 NA21309.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 366M Jul 29 11:34 NA24694.dedup.trimmed.hg38.bam
+-rw-r--r-- 1 mglasena ucsc_p_all_usr 148M Jul 29 11:34 NA24695.dedup.trimmed.hg38.bam
+```
+
+If I want to use samtools view to filter each file, I have a few options:
+1. Create 30 different slurm scripts and submit them one-by-one (tedious)
+2. Create one slurm script with a iteration statement (for loop) that filters each in succession (slow, the entire job crashes after the first error)
+3. Create one array job to process them in parallel
+
+In the array job, each task/sample/file has its own stderr and stdout, and any errors thrown don't affect the other tasks or cause the parent job to fail. Assuming I have access to the compute resources needed to filter all 30 bam files in parallel, the array job finishes 30X faster than using a for loop. This speedup is critical, because tomorrow, my mentor might change their mind and say they we need to filter at MAPQ > 40 instead of MAPQ > 30. 
+
+Here is how I would code an array job to process these samples:
+
+```
+#!/bin/bash
+#SBATCH --job-name=samtools
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=mglasena@ucsc.edu
+#SBATCH --output=samtools_%A_%a.out
+#SBATCH --error=samtools_%A_%a.err
+#SBATCH --mem=4G
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=00:10:00
+#SBATCH --array=0-32
+#SBATCH --partition=lab-colibri
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+
+# Define array variable containing the paths to the files to be manipulated
+# Define array variable containing the paths to all deduplicated BAMs
+bam_files=(
+	/hb/scratch/mglasena/hb_tutorial/HG002.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG003.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG004.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG005.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG01106.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG01258.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG01891.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG01928.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG02055.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG02630.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG03492.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/HG03579.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09021.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09049.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09071.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09117.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09118.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09122.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09125.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09175.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09198.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09200.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09224.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09245.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09251.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09359.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09364.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/IHW09409.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/NA19240.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/NA20129.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/NA21309.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/NA24694.dedup.trimmed.hg38.bam
+	/hb/scratch/mglasena/hb_tutorial/NA24695.dedup.trimmed.hg38.bam
+)
+
+# Define input and output files by indexing the bam_files variable
+input_bam=${bam_files[$SLURM_ARRAY_TASK_ID]}
+output_bam=${input_bam%.bam}.chr6.primary.mapq30.bam
+
+echo "SLURM_ARRAY_TASK_ID=$SLURM_ARRAY_TASK_ID"
+echo "Input BAM: $input_bam"
+echo "Output BAM: $output_bam"
+
+# Run samtools view command
+# -F 2304 excluse secondary and supplementary alignments
+# Check out https://samformat.pages.dev/sam-format-flag
+samtools index "$input_bam"
+samtools view -b -q 30 -F 2304 "$input_bam" chr6 > "$output_bam"
+```
+
+A few notes: 
+1. You can simplify this by writing code to scrape the files from a specified directory instead of listing them all in the script.
+2. It's helpful to add print statements (e.g., echo "Input BAM: $input_bam") for debugging purposes
+3. The following header flags ```#SBATCH --output=samtools_%A_%a.out #SBATCH --error=samtools_%A_%a.err``` tell SLURM to create separate output and error files for each task, named samtools_<job_id>_<array_task_id>.
+
+I don't like writing code in bash becuase the syntax is not very intuitive or human readable. When I cook up my own array jobs, I write a python script to be executed inside the slurm script. 
+
+```
+#!/bin/bash
+#SBATCH --job-name=samtools
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=mglasena@ucsc.edu
+#SBATCH --output=samtools_%A_%a.out
+#SBATCH --error=samtools_%A_%a.err
+#SBATCH --mem=4G
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=00:10:00
+#SBATCH --array=0-32
+#SBATCH --partition=lab-colibri
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+
+python3 -u filter_bam.py
+```
+
+Here, each array task will execute python3 filter_bam.py. I will include the script below. 
+
+```
+import os
+import subprocess
+
+working_directory = "/hb/scratch/mglasena/hb_tutorial/"
+
+bam_files = [
+	"/hb/scratch/mglasena/hb_tutorial/HG002.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG003.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG004.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG005.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG01106.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG01258.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG01891.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG01928.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG02055.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG02630.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG03492.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/HG03579.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09021.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09049.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09071.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09117.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09118.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09122.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09125.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09175.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09198.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09200.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09224.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09245.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09251.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09359.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09364.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/IHW09409.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/NA19240.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/NA20129.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/NA21309.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/NA24694.dedup.trimmed.hg38.bam",
+	"/hb/scratch/mglasena/hb_tutorial/NA24695.dedup.trimmed.hg38.bam"
+]
+
+def index_bam(bam_file):
+	index_command = "samtools index {bam}".format(bam = bam_file)
+	subprocess.run(index_command, check=True, shell=True)
+
+def filter_bam(bam_file):
+	# Define output bam file name
+	output_bam = bam_file.replace(".bam", ".chr6.primary.mapq30.bam")
+
+	# Define samtools view command
+	samtools_command = "samtools view -b -q 30 -F 2304 {input_bam} chr6 > {output_bam}".format(input_bam = bam_file, output_bam = output_bam)
+
+	# Execute samtools view command
+	subprocess.run(samtools_command, check=True, shell=True)
+
+def main():
+	array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
+	print("Array ID: {}".format(array_id))
+	
+	bam_file = bam_files[array_id]
+	print("Processing {file}".format(file = bam_file))
+	
+	index_bam(bam_file)
+	filter_bam(bam_file)
+
+if __name__ == "__main__":
+	main()
+```
+
+Here, I have neatly organized the different steps into functions that are called by main(). I highly reccomend using python to organize the different steps of a workflow into functions.
+
 
 
