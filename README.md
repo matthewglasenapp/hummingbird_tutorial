@@ -22,6 +22,9 @@
 
 <br/>
 
+> [!WARNING]
+> This is an unofficial guide, written from my own experience using Hummingbird and Elkhorn. It is not maintained by the UCSC HPC team, and parts of it may be out of date. For official help, see [Getting Help](#1-getting-help).
+
 <details>
 <summary><b>Table of Contents</b></summary>
 
@@ -63,56 +66,60 @@
 
 ## 1. Getting Help
 
-Learn more about Slurm at:
+**Asking the HPC team**
 
-1. Hummingbird homepage, https://hummingbird.ucsc.edu/, and the Hummingbird Getting Started page, https://hummingbird.ucsc.edu/getting-started/
-2. Stanford Slurm tutorial: https://login.scg.stanford.edu/tutorials/job_scripts/
-3. ChatGPT
+- Email **[help@ucsc.edu](mailto:help@ucsc.edu)** for help with Hummingbird or Elkhorn. See the [contact page](https://hummingbird.ucsc.edu/contact-us/).
+- Be as specific as you can. Include links to any software you need installed, the log files of the job that failed, and the terminal output that shows the error.
+- Do not email individual staff members, and do not use hummingbird@ucsc.edu. That address is retired.
+- If you use the clusters often, join the [Hummingbird and Elkhorn Slack](https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email).
+- The Hummingbird team holds [office hours](https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/) on Zoom, Thursdays from 1:00 PM to 2:00 PM.
 
-If you are a regular user, you should join the Hummingbird Slack community: https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email
+**Learning Slurm**
 
-The Hummingbird team also has weekly office hours on Thursday from 1:00 PM to 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
+- The [Hummingbird homepage](https://hummingbird.ucsc.edu/) and its [Getting Started page](https://hummingbird.ucsc.edu/getting-started/)
+- The [Stanford Slurm tutorial](https://login.scg.stanford.edu/tutorials/job_scripts/)
+- Claude and ChatGPT are great for troubleshooting common Slurm issues.
 
-You can also put in a ticket by emailing hummingbird@ucsc.edu.
+**Useful resources**
 
-You can monitor cluster usage at https://hummingbird.ucsc.edu/current-usage/
-
-There are example Slurm scripts on Hummingbird located at `/hb/software/scripts`.
+- [Current cluster usage](https://hummingbird.ucsc.edu/current-usage/)
+- Example Slurm scripts on Hummingbird, in `/hb/software/scripts`
 
 ## 2. What Is a Cluster?
 
-A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on Hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress.
+A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on Hummingbird and get be notified by email when they complete. We do not have to keep our computer running or monitor the progress.
 
 We interact with Hummingbird via the command line interface using UNIX commands. UNIX is an operating system that includes a collection of built-in tools and commands. Here is a great command line tutorial if you have no prior experience: https://www.codecademy.com/learn/learn-the-command-line.
 
-The commands used to submit and monitor jobs on Hummingbird are mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. There is tons of content on Slurm on the internet.
+The commands used to submit and monitor jobs on Hummingbird are mostly not Hummingbird-specific. Hummingbird uses the Slurm workload manager software. Slurm (Simple Linux Utility for Resource Management) is a job scheduler that automates the process of allocating resources (i.e., hardware) for users' computational tasks. There is tons of content on Slurm on the internet (see [Getting Help](#1-getting-help)).
+
+Every cluster has two kinds of computers. You use the **login node** to navigate the filesystem and submit jobs, which run on **compute nodes**. Slurm decides which compute node runs your job based on a set of rules created by the Hummingbird admin.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/cdbfeb86-011c-4b89-85cf-e19cf8bf67e4" alt="compute_cluster" width="700">
 </p>
 
-Every cluster has two kinds of computers. You log in to the **login node**. The work runs on the **compute nodes**. Slurm decides which compute node runs your job.
+
 
 > [!WARNING]
 > Do not run code or scripts on the login node. It slows it down for all users. Use `sbatch` or `salloc`, which are covered in [Part II](#part-ii-running-jobs).
 
 ## 3. Hummingbird and Elkhorn
 
-UCSC has two Slurm systems that you will use. They work the same way. They have different nodes and different partitions.
+Hummingbird and Elkhorn are two separate Slurm clusters. Each has its own login node, its own compute nodes, and its own partitions, and a job runs only on the nodes of the cluster you submit it from. The two clusters share one file system, so your home and scratch directories are the same on both. The Slurm commands are the same on both.
 
 | | Hummingbird | Elkhorn |
 |---|---|---|
-| What it is | The campus cluster | The system for PI-owned nodes |
+| Compute nodes | Shared campus nodes, open to all Hummingbird users | Nodes bought by individual labs. Each lab has priority on its own nodes, and other users can run on idle nodes through windfall |
 | Log in with | `ssh <your_cruzid>@hb.ucsc.edu` | `ssh <your_cruzid>@elkhorn.ucsc.edu` |
-| Our lab's nodes | | node-38 and node-39 (lab-colibri), node-40 (lab-colibri-hmem) |
+| Cornejo-Kelley nodes | | node-38 and node-39 (lab-colibri), node-40 (lab-colibri-hmem) |
 | Shared queue | 128x24 and other partitions | windfall, which spans every node on Elkhorn |
-| Node names | `node-XX` | `node-XX` |
 | Home | `/home/<your_cruzid>` | The same directory |
 | Scratch | `/scratch/<your_cruzid>` | The same directory |
 
 Both systems share your home and scratch directories, so a file you write on one is there on the other.
 
-Use Elkhorn for work on our lab's nodes, and use windfall when you are stuck in a queue. Most of Elkhorn is idle most of the time. Use Hummingbird for the campus partitions.
+Undergrad interns should start with Hummingbird and only use Elkhorn with their mentor's permission. Grads should familiarize themselves with Elkhorn in order to work with our lab's private nodes. The windfall partition of Elkhorn is great if you are stuck in the Hummingbird or Elkhorn lab-colibri queue. Elkhorn usually has a lot of free CPU, but this may change as the system onboards more users. 
 
 Access to Elkhorn requires your PI to have sponsored you. You can check whether you are linked to the pi-jkoc lab account with the following command:
 
@@ -122,15 +129,20 @@ sacctmgr show assoc user=$USER format=cluster,account,partition,qos%30,share
 
 ## 4. Logging In
 
-If not on the campus WiFi, you will need to be connected to the campus VPN.
+If you are not on the campus WiFi, you will need to be connected to the campus VPN. The campus VPN now requires your device to have the campus security bundle (Verified Access) installed. https://its.ucsc.edu/get-support/it-guides/verified-access/
 
-To log in, first open the terminal application (Mac users) or PuTTY (Windows users). We will use the ssh command, which stands for secure shell and provides a secure connection between your computer and the server. To log in to Hummingbird, you will use the following command:
+To log in, first open the terminal application (Mac users) or PuTTY (Windows users). Ue the `ssh` command, which stands for secure shell. `ssh` provides a secure connection between your computer and the server. To log in to Hummingbird, you will use the following command:
 
 ```
 ssh <your_cruzid>@hb.ucsc.edu
 ```
 
-Replace `<your_cruzid>` with your UCSC username in your command. You will be prompted to enter your password. For security measures, you will not be able to see the characters you are entering. Type your password and press enter.
+Replace `<your_cruzid>` with your UCSC username in your command. You will be prompted to enter your password. For security measures, you will not be able to see the characters you are entering. 
+
+
+Repeat: Characters will not print to the screen as you type your password!
+
+Type your password and press enter.
 
 To log in to Elkhorn, use `elkhorn.ucsc.edu` rather than `hb.ucsc.edu`.
 
@@ -175,9 +187,12 @@ When you log in, you are automatically taken to your home directory. To see the 
 pwd
 ```
 
-After running this command, `/home/<your_cruzid>` will be printed to the terminal. This is your personal home directory, where you can store files and data. Hummingbird users have a 1 TB storage quota in their home directory. I recommend using your home directory for longer-term storage, including stable files and software installs.
+After running this command, `/home/<your_cruzid>` will be printed to the terminal. This is your personal home directory, where you can store files and data. Hummingbird users have a 1 TB storage quota in their home directory. 
 
-You'll want to work mostly in your scratch directory, at `/scratch/<your_cruzid>`, where there is no storage quota. This is a great location to test new scripts and to store intermediate files.
+I recommend using your home directory for longer-term storage, including stable files and software installs. For preliminary analysis and testing, you'll want to work mostly in your scratch directory, at `/scratch/<your_cruzid>`, where there is no storage quota. This is a great location to test new scripts and to store intermediate files. 
+
+> [!IMPORTANT]
+> Check in with your mentor about where you should be storing important files, such as raw data, stable scripts, and final output files.
 
 ```
 cd /scratch/<your_cruzid>
@@ -191,10 +206,8 @@ cd /scratch/<your_cruzid>
 > [!WARNING]
 > Always write `/scratch/<your_cruzid>` in your scripts. `/hb/scratch` also works on the login nodes, but it does not exist on the compute nodes, so a job that uses it fails.
 
-Work in your scratch directory by default. Ask your PI where to store important files.
-
 > [!CAUTION]
-> Scratch is not backed up. Keep a copy of anything you cannot regenerate in your home directory or on your own computer.
+> Scratch is not backed up. Keep a copy of anything you cannot regenerate in your home directory, in one of the lab folders, or on your own computer.
 
 ## 6. Moving Files
 
@@ -222,13 +235,7 @@ For larger data transfers, see Hummingbird's Globus recommendations: https://hum
 
 ## 7. Partitions
 
-Let's learn more about the cluster.
-
-```
-sinfo
-```
-
-The different partitions are listed. Partitions are groups of nodes with different configurations. The `STATE` column shows whether a node is free (`idle`), partly used (`mix`), full (`alloc`), or being taken out of service (`drng`).
+You can see the available partitions with `sinfo`. Partitions are groups of nodes with different configurations. The `STATE` column shows whether a node is free (`idle`), partly used (`mix`), full (`alloc`), or being taken out of service (`drng`).
 
 ### 7.1 Hummingbird Partitions
 
@@ -267,25 +274,27 @@ lab-colibri-hmem    up   infinite      1    mix node-40
 
 | Partition | Nodes | Who can use it | Header lines |
 |---|---|---|---|
-| `lab-colibri` | node-38, node-39 | Our lab | `--partition=lab-colibri --account=pi-jkoc --qos=pi-jkoc` |
-| `lab-colibri-hmem` | node-40 | Our lab | `--partition=lab-colibri-hmem --account=pi-jkoc --qos=pi-jkoc` |
-| `windfall` | every node | Everyone on Elkhorn | `--partition=windfall` |
-| `512x64` | node-29, node-30 | Another lab's nodes | Reach them through windfall |
+| `lab-colibri` | node-38, node-39 | The Cornejo and Kelley labs, with priority. Our jobs here are never preempted | `--partition=lab-colibri --account=pi-jkoc --qos=pi-jkoc` |
+| `lab-colibri-hmem` | node-40 | The Cornejo and Kelley labs, with priority. Our jobs here are never preempted | `--partition=lab-colibri-hmem --account=pi-jkoc --qos=pi-jkoc` |
+| `windfall` | Every Elkhorn node, including ours | Every Elkhorn user. A job on another lab's node is preempted when that lab needs the node | `--partition=windfall` |
+| `512x64` | node-29, node-30 | Another lab, with priority. Everyone else reaches these nodes through windfall | |
+
+Any Elkhorn user can run on node-38, node-39 and node-40 through windfall when we are not using them. When we submit to `lab-colibri` or `lab-colibri-hmem`, those windfall jobs are preempted to make room for ours.
 
 #### Colibri
 
-Our lab has some private nodes with increased CPU and RAM. We have two nodes on the partition `lab-colibri` (node-38, node-39) and one high memory node on the partition `lab-colibri-hmem` (node-40). node-38 and node-39 have 112 CPUs and 1000 GB RAM each. node-40 is a high memory node with 112 CPUs and 2000 GB RAM.
+Our lab has three private nodes, two on the partition `lab-colibri` (node-38, node-39) and one high memory node on the partition `lab-colibri-hmem` (node-40). node-38 and node-39 have 112 CPUs and 1000 GB RAM each. node-40 is a high memory node with 112 CPUs and 2000 GB RAM.
 
 > [!IMPORTANT]
-> There are no hard-coded CPU limits on the lab-colibri and lab-colibri-hmem partitions. Please be considerate of how much compute resources you are allocating at a single time. If the nodes are idle and you have a high priority job, feel free to allocate a lot of resources. If there are many people in the queue and your job is not time-sensitive, try to occupy fewer CPUs to share the resource!
+> There are no hard-coded CPU limits on the lab-colibri and lab-colibri-hmem partitions. Please be considerate of how much compute resources you are allocating at a single time. If the nodes are idle and you have a high priority job, feel free to allocate a lot of resources. If there are many people in the queue and your job is not time-sensitive, try to occupy fewer CPUs to allow other lab members to access the partitions. 
 
-Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as possible given the available CPU and RAM. You can set the number of array tasks that run at the same time like this:
+Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as physically possible given the available CPU and RAM. You can limit the number of array tasks that run at the same with the following slurm header line:
 
 ```
 #SBATCH --array=0-999%10
 ```
 
-This says create 1,000 array tasks (0-based indexing), but only run 10 tasks at a time. [Section 15](#15-array-jobs) covers array jobs.
+This line creates 1,000 array tasks (0-based indexing), but allows no more than 10 tasks to run simultaneously. [Section 15](#15-array-jobs) covers array jobs.
 
 To target node-38 and/or node-39, include the following in your Slurm script header.
 
@@ -305,7 +314,7 @@ node-40 is on a different partition, `lab-colibri-hmem`. To target node-40, incl
 
 #### windfall
 
-In addition to our lab's nodes, we also have access to other lab groups' nodes when they're idle! The windfall partition (`--partition=windfall`) spans every node in the cluster, and it has no CPU limit. It is the default partition on Elkhorn (the `*` in `sinfo`).
+In addition to our lab's nodes, we also have access to other lab groups' nodes when they're idle! The windfall partition (`--partition=windfall`) spans every node in the Elkhorn cluster, and it has no CPU limit. It is the default partition on Elkhorn (the `*` in `sinfo`).
 
 > [!WARNING]
 > If your job is running on another lab's node and someone from that lab requests it, your job is canceled and does not restart. So you need to build your own verification that your jobs actually finished, or set up requeuing ([section 16.1](#161-requeuing)).
@@ -326,169 +335,55 @@ squeue
 ```
 
 <details>
-<summary><b>Example squeue output from Hummingbird (2025)</b></summary>
+<summary><b>Example squeue output from Elkhorn</b></summary>
 
 ```
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-            424894    128x24     EDTA kamaryan  R    1:46:03      1 hbnode-20
-            424893    128x24     EDTA kamaryan  R    1:46:09      1 hbnode-19
-            424892    128x24     EDTA kamaryan  R    1:46:18      1 hbnode-18
-            424891    128x24     EDTA kamaryan  R    1:46:27      1 hbnode-15
-            424895    128x24     EDTA kamaryan  R    1:45:57      1 hbnode-21
-            407851    128x24 genotype mglasena  R 5-21:23:42      1 hbnode-17
-            422068    128x24  l_s=0.1    ppopp  R 4-00:19:27      1 hbnode-16
-            424403    128x24 estimate    jeqli  R   18:24:22      1 hbnode-09
-            424419    128x24 estimate    jeqli  R   17:58:17      1 hbnode-11
-            424418    128x24 estimate    jeqli  R   17:58:20      1 hbnode-08
-            424630    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-18
-            424631    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-06
-            424632    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-07
-            424633    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-13
-            424634    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-12
-            424635    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-12
-            424636    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-14
-            424637    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-14
-            424638    128x24  qgm_job  aazaman  R    9:59:00      1 hbnode-15
-            424629    128x24  qgm_job  aazaman  R    9:59:01      1 hbnode-10
-          424791_1    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_2    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_3    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_4    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_5    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_6    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_7    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_8    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-          424791_9    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-         424791_10    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-         424791_11    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-10
-         424791_12    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_13    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_14    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_15    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_16    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_17    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_18    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_19    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_20    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_21    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_22    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_23    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_24    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_25    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_26    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_27    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_28    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_29    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_30    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_31    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_32    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_33    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_34    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-13
-         424791_35    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_36    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_37    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_38    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_39    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_40    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_41    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_42    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_43    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_44    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_45    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-07
-         424791_46    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_47    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_48    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_49    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_50    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_51    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_52    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_53    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_54    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_55    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_56    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_57    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_58    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_59    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_60    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_61    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_62    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_63    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_64    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_65    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_66    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_67    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_68    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-06
-         424791_69    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-16
-         424791_70    128x24 Triangul   szhu44  R    2:56:19      1 hbnode-16
-            424918    128x24 interact     jbos  R      41:36      1 hbnode-07
-            424888    256x44     EDTA kamaryan  R    1:50:59      1 hbnode-25
-            424936    256x44 interact jtsamson  R       3:15      1 hbnode-25
-            403035 512x64-ib    pyscf   aluu10 PD       0:00      1 (Resources)
-            403040 512x64-ib    pyscf   aluu10 PD       0:00      1 (ReqNodeNotAvail, UnavailableNodes:hbnode-40)
-            403041 512x64-ib    pyscf   aluu10 PD       0:00      1 (ReqNodeNotAvail, UnavailableNodes:hbnode-40)
-            403046 512x64-ib    pyscf   aluu10 PD       0:00      1 (ReqNodeNotAvail, UnavailableNodes:hbnode-40)
-            400958 512x64-ib    pyscf  zliu373  R 10-21:56:46      1 hbnode-40
-            401003 512x64-ib    pyscf  zliu373  R 10-21:16:00      1 hbnode-41
-            424906 512x64-ib       qe kaljamal  R    1:24:22      2 hbnode-[38-39]
-            422065 512x64-ib clown_dt  jwjohns  R 4-00:25:57      1 hbnode-31
-            424714 512x64-ib 0d6fd122  jwjohns  R    6:01:55      1 hbnode-30
-            424713 512x64-ib 0d6fd122  jwjohns  R    6:02:25      1 hbnode-30
-            424723 512x64-ib 0d6fd122  jwjohns  R    5:36:55      1 hbnode-30
-            424724 512x64-ib 0d6fd122  jwjohns  R    5:34:25      1 hbnode-30
-            424737 512x64-ib 0d6fd122  jwjohns  R    4:47:42      1 hbnode-30
-            424738 512x64-ib 0d6fd122  jwjohns  R    4:47:42      1 hbnode-30
-            424748 512x64-ib 0d6fd122  jwjohns  R    4:05:52      1 hbnode-30
-            424753 512x64-ib 0d6fd122  jwjohns  R    3:58:23      1 hbnode-30
-            424754 512x64-ib 0d6fd122  jwjohns  R    3:58:23      1 hbnode-30
-            424758 512x64-ib 0d6fd122  jwjohns  R    3:46:53      1 hbnode-30
-            424762 512x64-ib 0d6fd122  jwjohns  R    3:35:53      1 hbnode-30
-            424763 512x64-ib 0d6fd122  jwjohns  R    3:31:22      1 hbnode-30
-            424764 512x64-ib 0d6fd122  jwjohns  R    3:30:52      1 hbnode-30
-            424765 512x64-ib 0d6fd122  jwjohns  R    3:29:52      1 hbnode-30
-            424768 512x64-ib 0d6fd122  jwjohns  R    3:18:53      1 hbnode-30
-            424769 512x64-ib 0d6fd122  jwjohns  R    3:16:23      1 hbnode-30
-            424779 512x64-ib 0d6fd122  jwjohns  R    3:13:53      1 hbnode-30
-            424780 512x64-ib 0d6fd122  jwjohns  R    3:13:53      1 hbnode-30
-            424784 512x64-ib 0d6fd122  jwjohns  R    3:07:53      1 hbnode-30
-            424785 512x64-ib 0d6fd122  jwjohns  R    3:05:23      1 hbnode-30
-            424861 512x64-ib 0d6fd122  jwjohns  R    2:52:23      1 hbnode-30
-            424864 512x64-ib 0d6fd122  jwjohns  R    2:44:52      1 hbnode-30
-            424865 512x64-ib 0d6fd122  jwjohns  R    2:40:23      1 hbnode-30
-            424867 512x64-ib 0d6fd122  jwjohns  R    2:39:23      1 hbnode-30
-            424874 512x64-ib 0d6fd122  jwjohns  R    2:18:22      1 hbnode-30
-            424873 512x64-ib 0d6fd122  jwjohns  R    2:18:52      1 hbnode-30
-            424875 512x64-ib 0d6fd122  jwjohns  R    2:14:52      1 hbnode-30
-            424878 512x64-ib 0d6fd122  jwjohns  R    2:11:22      1 hbnode-30
-            424883 512x64-ib 0d6fd122  jwjohns  R    2:00:52      1 hbnode-30
-            424885 512x64-ib 0d6fd122  jwjohns  R    1:54:52      1 hbnode-29
-            424886 512x64-ib 0d6fd122  jwjohns  R    1:51:52      1 hbnode-35
-            424897 512x64-ib 0d6fd122  jwjohns  R    1:42:22      1 hbnode-30
-            424900 512x64-ib 0d6fd122  jwjohns  R    1:33:23      1 hbnode-30
-            424901 512x64-ib 0d6fd122  jwjohns  R    1:31:53      1 hbnode-30
-            424902 512x64-ib 0d6fd122  jwjohns  R    1:29:53      1 hbnode-30
-            424907 512x64-ib 0d6fd122  jwjohns  R    1:16:53      1 hbnode-40
-            424910 512x64-ib 0d6fd122  jwjohns  R    1:13:23      1 hbnode-40
-            424915 512x64-ib 0d6fd122  jwjohns  R      44:42      1 hbnode-40
-            424916 512x64-ib 0d6fd122  jwjohns  R      44:42      1 hbnode-40
-            424917 512x64-ib 0d6fd122  jwjohns  R      43:12      1 hbnode-41
-            424919 512x64-ib 0d6fd122  jwjohns  R      40:36      1 hbnode-41
-            424923 512x64-ib 0d6fd122  jwjohns  R      34:53      1 hbnode-41
-            424926 512x64-ib 0d6fd122  jwjohns  R      26:52      1 hbnode-41
-            424925 512x64-ib 0d6fd122  jwjohns  R      27:22      1 hbnode-41
-            424928 512x64-ib 0d6fd122  jwjohns  R      15:53      1 hbnode-41
-            424930 512x64-ib 0d6fd122  jwjohns  R      15:23      1 hbnode-41
-            424931 512x64-ib 0d6fd122  jwjohns  R       8:53      1 hbnode-41
-            424932 512x64-ib 0d6fd122  jwjohns  R       7:53      1 hbnode-41
-            424933 512x64-ib 0d6fd122  jwjohns  R       7:53      1 hbnode-41
-            424935 512x64-ib 0d6fd122  jwjohns  R       4:23      1 hbnode-41
-397752_[2699-3578% lab-colib ukraine_ ogarci12 PD       0:00      1 (Nodes required for job are DOWN, DRAINED or reserved for jobs in higher priority partitions)
-       397752_2698 lab-colib ukraine_ ogarci12  R       6:53      1 hbnode-40
-       397752_2697 lab-colib ukraine_ ogarci12  R      15:53      1 hbnode-40
-       397752_2696 lab-colib ukraine_ ogarci12  R      16:23      1 hbnode-40
-       397752_2695 lab-colib ukraine_ ogarci12  R      27:52      1 hbnode-40
-       397752_2692 lab-colib ukraine_ ogarci12  R      38:53      1 hbnode-40
-       397752_2693 lab-colib ukraine_ ogarci12  R      38:53      1 hbnode-40
-       397752_2694 lab-colib ukraine_ ogarci12  R      38:53      1 hbnode-40
+           5651771  windfall axi3d-re   jowolf PD       0:00     16 (Resources)
+           5651638  windfall meas_icT   jowolf PD       0:00      1 (Priority)
+           5651673  windfall s3a300nu      xiz PD       0:00      2 (Dependency)
+           5651661  windfall  s3a300e      xiz PD       0:00      2 (Dependency)
+           5651578  windfall fxs_ext_      xiz PD       0:00      1 (Dependency)
+           5651772  windfall post_icT   jowolf PD       0:00      1 (Dependency)
+           5651769  windfall post_icT   jowolf PD       0:00      1 (Dependency)
+           5651773  windfall meas_icT   jowolf PD       0:00      1 (Dependency)
+           5651770  windfall meas_icT   jowolf PD       0:00      1 (Dependency)
+           5645485  windfall W0047_tw cphilli4  R 8-23:19:17      2 node-[79-80]
+           5639285  windfall orca_tes jjuanita  R 15-04:48:26      1 node-45
+           5597657  windfall orca_tes jjuanita  R 21-02:16:43      1 node-49
+           5647920  windfall pyscf_te jjuanita  R 5-22:48:02      1 node-48
+           5647921  windfall pyscf_te jjuanita  R 5-22:47:02      1 node-50
+           5647922  windfall pyscf_te jjuanita  R 5-22:40:15      1 node-51
+           5647924  windfall pyscf_te jjuanita  R 5-22:35:34      1 node-52
+           5647926  windfall pyscf_te jjuanita  R 5-16:43:23      1 node-46
+           5647952  windfall W0047_pa cphilli4  R 5-05:15:06      2 node-[77-78]
+           5647979  windfall pyscf_te jjuanita  R 4-17:54:04      1 node-47
+           5648724  windfall W0047_En cphilli4  R 2-01:23:59      2 node-[115-116]
+           5648727  windfall W0047_Si cphilli4  R 2-01:22:53      2 node-[42-43]
+           5648728  windfall 2M2244_Q cphilli4  R 2-01:22:14      2 node-[35-36]
+           5648734  windfall 2M2244_S cphilli4  R 2-01:20:45      2 node-[55-56]
+           5648732  windfall 2M2244_F cphilli4  R 2-01:21:13      2 node-[53-54]
+           5648736  windfall W0047_pa cphilli4  R 2-01:19:45      2 node-[57-58]
+           5648740  windfall W0047_pa cphilli4  R 2-01:18:44      2 node-[61-62]
+           5648739  windfall W0047_pa cphilli4  R 2-01:19:10      2 node-[59-60]
+           5648741  windfall 2M2244_p cphilli4  R 2-01:17:45      2 node-[63-64]
+           5648743  windfall 2M2244_p cphilli4  R 2-01:16:43      2 node-[67-68]
+           5648742  windfall 2M2244_p cphilli4  R 2-01:17:14      2 node-[65-66]
+           5648744  windfall 2M2244__ cphilli4  R 2-01:16:06      2 node-[69-70]
+           5651012  windfall ethan_sc eschreye  R   14:30:30     16 node-[81-92,107-110]
+           5651459  windfall 331_QZ_S   aluu10  R    7:32:52      1 node-41
+           5651543  windfall W0047_Fo cphilli4  R    5:51:44      2 node-[75-76]
+           5651544  windfall W0047_Qu cphilli4  R    5:51:14      2 node-[29-30]
+           5651575  windfall fxs_ext_      xiz  R    4:57:43      1 node-104
+           5651768  windfall axi3d-re   jowolf  R      59:46     12 node-[93-103,106]
+           5651660  windfall  s3a300e      xiz  R    2:35:06      2 node-[31-32]
+           5651664  windfall   s3a30e      xiz  R    2:33:44      2 node-[112-113]
+           5651665  windfall   s3a10e      xiz  R    2:33:44      2 node-[71-72]
+           5651672  windfall s3a300nu      xiz  R    2:15:44      2 node-[73-74]
+           5651765  windfall orca_tes jjuanita  R      21:16      1 node-44
+           5651777  windfall 2M2244_E cphilli4  R      58:46      2 node-[37,111]
+           5651776  windfall 331_QZ_S   aluu10  R    1:03:46      1 node-40
+           5651612  windfall interact mescob11  R    3:39:30      1 node-105
 ```
 
 </details>
@@ -501,11 +396,10 @@ squeue -u mglasena
 
 ```
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
             407851    128x24 genotype mglasena  R 5-21:24:31      1 hbnode-17
 ```
 
-My job (id 407851, name genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17, which is part of the 128x24 partition. Let's get more detail about this job using `scontrol show job <job_id>`.
+My job (id 407851, name genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17, which is part of the 128x24 partition. You can get more info about any job, including other users' jobs, with `scontrol`
 
 ```
 scontrol show job 407851
@@ -555,11 +449,13 @@ You can see that I have set a time limit of 7-00:00:00 for this job. I requested
 
 ### 9.1 Create a Slurm Script
 
-Let's use the nano text editor to write a Slurm script.
+Either create slurm scripts on your local machine and transfer them to hummingbird, or write them on Hummingbird using a text editor, such as `nano`, `vim`, or `emacs`. `nano` is the most user-friendly option for beginners. 
 
 ```
 nano test.sh
 ```
+
+Here is an example slurm header:
 
 ```
 #!/bin/bash
@@ -578,8 +474,7 @@ nano test.sh
 
 To run the same job on Elkhorn, change the partition lines. See [section 7.2](#72-elkhorn-partitions).
 
-<details>
-<summary><b>What each header line means</b></summary>
+What each header line means:
 
 | Line | Meaning |
 |---|---|
@@ -592,8 +487,6 @@ To run the same job on Elkhorn, change the partition lines. See [section 7.2](#7
 | `--mem` | How much RAM the job can use. The job stops if it uses more |
 | `--time` | The longest the job can run. `1-0` is one day. Always set it |
 
-</details>
-
 ### 9.2 Submit the Slurm Script
 
 Submit the job using the `sbatch <slurm_script>` command.
@@ -604,13 +497,17 @@ sbatch test.sh
 
 ### 9.3 Cancel a Slurm Job
 
-You can cancel a running job at any moment using `scancel <job_id>`.
+You can cancel a running job at any moment using 
 
-If you accidentally run a job on the login node by mistake, you can kill the process with Ctrl + C or exit the shell window (this closes the connection).
+```
+scancel <job_id>
+```
+
+If you accidentally run a heavy script on the login node, you can kill the process with Ctrl + C or exit the shell window (this closes the connection).
 
 ## 10. Interactive Jobs
 
-You can run an interactive job using the `salloc` command. This is great for debugging. Slurm gives you a shell on a compute node, and you run commands there by hand.
+You can run an interactive job using the `salloc` command. This is great for shorter tasks, such as testing scripts and debugging. Slurm gives you a shell on a compute node, and you run commands there by hand.
 
 On Hummingbird:
 
@@ -630,7 +527,10 @@ When the prompt changes to a node name, such as `node-37`, you are on the comput
 
 You can see how efficient your Slurm jobs were using the following command: `seff <job_id>`.
 
-Let's inspect one of my recent jobs. This is a different job from the one above. Note that the `seff` command typically doesn't work while a job is still running.
+Here is an example of one of my jobs from the past (different from the job shown above).
+
+> [!NOTE]
+> The `seff` command typically doesn't work while a job is still running.
 
 ```
 seff 398476_150
@@ -653,7 +553,10 @@ Memory Efficiency: 66.15% of 40.00 GB
 
 **Memory Utilized.** Array task 150 of Slurm job 398476 only used 26.46 GB of RAM. Next time I run a similar job, I can reduce requested RAM from 40.00 GB to 30.00 GB.
 
-**CPU Efficiency** is the amount of time the requested CPUs were actively doing work relative to the amount of time they were idle. In this case, 80% of the reserved CPU time was actively used for computations, and the remaining ~20% was idle. This is fairly efficient, but next time I could consider requesting slightly fewer CPUs. Note that CPU usage can vary drastically during the job if you have multiple commands in your Slurm job. Efficiency will be low when only one or a few steps require many CPUs, and the other steps cannot make use of multiple CPUs.
+**CPU Efficiency** is the amount of time the requested CPUs were actively doing work relative to the amount of time they were idle. In this case, 80% of the reserved CPU time was actively used for computations, and the remaining ~20% was idle. This is fairly efficient, but next time I could consider requesting slightly fewer CPUs.
+
+> [!TIP]
+> CPU usage can vary drastically during the job if you have multiple commands in your Slurm job. Efficiency will be low when only one or a few steps require many CPUs, and the other steps cannot make use of multiple CPUs.
 
 <br/>
 
@@ -661,7 +564,7 @@ Memory Efficiency: 66.15% of 40.00 GB
 
 ## 12. Modules
 
-There is a lot of pre-installed software on Hummingbird. Before installing a new software, check to see if it is already available:
+There is are many pre-installed software packages on Hummingbird. Before installing a new software, check to see if it is already available:
 
 ```
 module avail
@@ -671,71 +574,66 @@ module avail
 <summary><b>Example module avail output</b></summary>
 
 ```
---------------------------------------------------- /hb/software/moduledeps/spack ---------------------------------------------------
-   adios2/2.9.2                 cfitsio/4.3.0    htslib/1.16                 opencv/4.8.0                  r/4.3.0
-   angsd/0.935                  cp2k/2023.2      htslib/1.17          (D)    openmpi/4.1.6                 root/6.24.06
-   armadillo/12.4.0             delly2/1.1.6     jags/4.3.0                  parallel-netcdf/1.12.3        salmon/1.10.2
-   bcftools/1.16                fftw/3.3.10      jellyfish/2.2.7             pcre/8.45                     samtools/1.16.1
-   bcl2fastq2/2.20.0.422 (D)    gate/9.1         lammps/20230802             pcre2/10.42                   samtools/1.17
-   beagle/5.4                   gdal/3.7.3       libpng/1.6.39               perl/5.32.1                   sqlite/3.43.2
-   berkeley-db/18.1.40          geant4/10.7.4    maker/3.01.04               perl/5.38.0                   sratoolkit/3.0.0
-   boost/1.55.0                 geos/3.12.0      netcdf-c/4.9.2              phyx/1.3.1             (D)    stacks/2.53
-   boost/1.83.0          (D)    gmake/4.3        netcdf-fortran/4.6.1        pmix/5.0.1             (D)    stringtie/2.2.1
-   bowtie/1.3.1-7               gsl/2.7.1        nlopt/2.7.0                 proj/9.2.1                    swig/4.1.1
-   bowtie2/2.5.1                hdf5/1.14.0      nwchem/7.2.0                psmc/2016-1-21                trimmomatic/0.39
-   bwa/0.7.17                   hmmer/3.4        ont-guppy/6.1.7             qualimap/2.2.1                vcftools/0.1.16  (D)
+---------------------------------------------------------------- /hb/software/modulefiles -----------------------------------------------------------------
+   admixture/1.3.0              gcat/1.0                 modkit/0.4.0                    quantumespresso/7.5                 (D)
+   alphafold3/3.0.0             gcloud/556.0.0           mosdepth/0.3.4                  raxml-ng/1.2.0
+   amber/24                     gdbm/1.26                mrbayes/3.2.7                   repeatmasker/4.1.5
+   ant/1.10.10                  gemma/0.98.5             mysql/8.4.8-lts                 rmblast/2.14.1
+   antlr/2.7.7                  git/2.52.0        (L)    namd/2.12                       rust/1.79.0
+   aria2/1.37.0                 glimpse/2.0.1            ncbi/16.36.0                    rust/1.94.1                         (D)
+   aster/1.16                   go/1.22.5                nco/5.3.2                       sambamba/0.8.2
+   autoconf/2.73                gradle/8.4               necat/0.0.1                     seqkit/2.5.1
+   aws/2.13.15                  guppy/6.4.6-cpu          new-hmmer/3.4                   sfincs/2.1.1-cpu
+   bbftp/3.2.1                  guppy/6.4.6-gpu   (D)    nextflow/24.10.4                shapeit5/5.1.1
+   bbtools/39.01                hisat/2.1.0              ngsld/1.2.0                     shasta/0.12.0
+   beast/2.1.4                  iq-tree/2.2.2.6          nvidia-hpc-sdk/24.7             singularity-ce/singularity-ce.4.1.4
+   bedtools/2.26.0              java/8u151               openfoam/OpenFOAM-v2206         slim/4.2.2
+   blast/2.17.0                 java/8u471        (D)    orca/5.0.1                      smrtlink/8.0.0
+   bwa-mem2/2.2.1               jdk/17.0.7               orca/6.0.1                      spades/4.1.0
+   ccache/4.10.2                jdk/21.0.4        (D)    orca/6.1.0                      star/2.7.10b
+   cellranger/2.2.0             julia/1.11.0             orca/6.1.1               (D)    structure/2.3.4
+   chrome/109.0.5414.119        kmc/3.2.4                paml/4.10.7                     swan/41.45.C
+   cuda/12.8.1                  lastz/1.04.00            pandoc/2.14.2                   swan/41.45.Z                        (D)
+   cuda/13.1.1           (D)    lastz/1.04.41     (D)    parallel/20200122               trf/4.09.1
+   cufflinks/2.2.1              lftp/4.9.3               paraview/5.13.1-gpu             trimgalore/0.6.10
+   dorado/0.9.0                 lumpy/0.3.1              paraview/5.13.1-swrender        trimmomatic/0.39
+   dorado/0.9.1          (D)    macaulay2/1.25.05        paraview/5.13.3-gpu             udunits/2.2.8
+   ecosys/1.1                   mafft/7.520              paraview/5.13.3-swrender (D)    vg/1.12.1
+   edirect/062020               magic-blast/1.7.2        perl/5.40.0                     wtdbg2/2.5
+   eigensoft/8.0.0              mash/2.3                 pftool/pftool                   xbeach/r6057-mpi
+   elai/1.21                    matlab/2023b             phast/1.5                       xbeach/r6057
+   fastp/0.23.2                 matlab/2025b      (D)    picard/2.27.1                   xbeach/r6112-mpi
+   flye/2.9.2                   mauve/2.4.1              picard/3.4.0             (D)    xbeach/r6112                        (D)
+   foldseek/8-ef4e960           migrate/3.6.11           plink/1.90b6.16                 xerces-c/3.3.0
+   galprop/57                   miniconda3/3.13   (L)    plink/2.0a7.1            (D)
+   gatk/4.4.0.0                 minimap2/2.17            protobuf/28.2
+   gaussian/09.D1.01            mitofinder/1.4.2         quantumespresso/7.2
 
------------------------------------------------------ /hb/software/modulefiles ------------------------------------------------------
-   admixture/1.3.0              galprop/57               mitofinder/1.4.2                repeatmasker/4.1.5
-   amber/24                     gatk/4.4.0.0             modkit/0.4.0                    rmblast/2.14.1
-   ant/1.10.10                  gaussian/09.D1.01        mosdepth/0.3.4                  rust/1.79.0
-   antlr/2.7.7                  gcat/1.0                 namd/2.12                       sambamba/0.8.2
-   aster/1.16                   gemma/0.98.5             ncbi/16.36.0                    seqkit/2.5.1
-   aws/2.13.15                  go/1.22.5                nco/5.3.2                       sfincs/2.1.1-cpu
-   bbftp/3.2.1                  gradle/8.4               necat/0.0.1                     shasta/0.12.0
-   bbtools/39.01                guppy/6.4.6-cpu          new-hmmer/3.4                   singularity-ce/singularity-ce.4.1.4
-   beast/2.1.4                  guppy/6.4.6-gpu   (D)    nextflow/24.10.4                slim/4.2.2
-   bedtools/2.26.0              hisat/2.1.0              ngsld/1.2.0                     smrtlink/8.0.0
-   blast/2.15.0                 iq-tree/2.2.2.6          nvidia-hpc-sdk/24.7             spades/4.1.0
-   bwa-mem2/2.2.1               java/8u151               openfoam/OpenFOAM-v2206         star/2.7.10b
-   ccache/4.10.2                jdk/17.0.7               orca/5.0.1                      structure/2.3.4
-   cellranger/2.2.0             jdk/21.0.4        (D)    orca/6.0.1                      swan/41.45.C
-   chrome/109.0.5414.119        julia/1.11.0             orca/6.1.0               (D)    swan/41.45.Z                        (D)
-   cuda/12.5.1                  lastz/1.04.00            paml/4.10.7                     trf/4.09.1
-   cuda/12.6             (D)    lastz/1.04.41     (D)    pandoc/2.14.2                   trimgalore/0.6.10
-   cufflinks/2.2.1              lftp/4.9.3               parallel/20200122               udunits/2.2.8
-   dorado/0.9.0                 lumpy/0.3.1              paraview/5.13.1-gpu             vg/1.12.1
-   dorado/0.9.1          (D)    mafft/7.520              paraview/5.13.1-swrender (D)    wtdbg2/2.5
-   ecosys/1.1                   magic-blast/1.7.2        perl/5.40.0              (D)    xbeach/r6057-mpi
-   edirect/062020               mash/2.3                 phast/1.5                       xbeach/r6057
-   eigensoft/8.0.0              matlab/2021b             picard/2.27.1                   xbeach/r6112-mpi
-   elai/1.21                    matlab/2023b      (D)    plink/1.09                      xbeach/r6112                        (D)
-   fastp/0.23.2                 migrate/3.6.11           protobuf/28.2                   xerces-c/3.3.0
-   flye/2.9.2                   miniconda3/3.12          quantumespresso/7.2
-   foldseek/8-ef4e960           minimap2/2.17            raxml-ng/1.2.0
+----------------------------------------------------------- /hb/software/moduledeps/miniconda3 ------------------------------------------------------------
+   agat/1.2.0                 crpropa/3.2.1                         humann/3.9              ngslca/1.0.5               roary/3.13.0
+   alphapulldown/2.5.1        cutadapt/4.4                          hyphy/2.5.73            nwchem/7.2.2               rsem/1.3.3
+   angsd/0.940                delly/1.2.6                           hyphy/2.5.79     (D)    odgi/0.8.6                 sage/10.3
+   apcluster/1.4.13           demucs/4.0.1                          inla/23.09.09           orthofinder/2.5.5          salmon/1.10.3
+   axisem3d/2.1.0             dendropy/4.6.1                        intarna/3.4.0           panaroo/1.3.4              samtools/1.21
+   bamdam/0.3.0        (D)    edta/2.2.x                            iq-tree/3.0.1    (D)    panaroo/1.5.1       (D)    seqtk/1.4
+   bamdam/24dec14             fastq-screen/0.16.0                   kb-python/0.28.2        pcangsd/1.36.1             shortbred/0.9.4
+   bcftools/1.21              fastqc/0.12.1                         kneaddata/0.12.4        pggb/0.6.0                 sideretro/1.1.6
+   bcl2fastq2/2.20.0          freeclimber/0.4.0                     kraken/2.1.3            phylophlan/3.0             snakemake/7.32.4
+   bifrost/1.1.4              fugassem/0.3.8                        krakenuniq/1.0.4        phyx/1.1.1                 sniffles/2.3.2
+   bowtie/2.5.4               geant4/11.3.2                         macs/3.0.1              ppanini/0.7.4              sniffles/2.7.5   (D)
+   braker/2.1.6               genomescope/2.1.0                     manta/1.6.0             prokka/1.14.5              stacks/2.65
+   busco/5.4.7                gffutils/0.12.0                       metaphlan/4.1.1         prokka/1.15.6       (D)    subread/2.1.1
+   buscophylo/1.3             globus-compute-endpoint/4.15.0        metawibele/0.4.7        pyscf/2.7.0                tidyverse/2.0.0
+   cactus/2.8.4               gmt/6.4.0                             mitohifi/3.2.2          qiime2/2022.2              toga/1.1.7
+   captus/1.6.0               gromacs/2024.2.gpu                    moseq2/1.3.0            qiime2/2024.10      (D)    trinity/2.15.1
+   climlab/0.8.2              gromacs/2024.2                 (D)    multiqc/1.27            quast/5.2.0                vcftools/0.1.16
+   climlab/0.9.1       (D)    gubbins/3.4                           nanoreviser/1.0         r/4.4.1                    velvet/1.2.10
+   coinfinder/1.2.1           heasoft/6.33.2                        newick_utils/1.6        repeatmodeler/2.0.5
+   cp2k/2024.1                hifiasm/0.25.0                        nextflow/25.10.4 (D)    rerconverge/0.3.0
 
------------------------------------------------- /hb/software/moduledeps/miniconda3 -------------------------------------------------
-   agat/1.2.0               crpropa/3.2.1              hyphy/2.5.50            ngslca/1.0.5               rerconverge/0.3.0
-   angsd/0.940       (D)    cutadapt/4.4               hyphy/2.5.73     (D)    nwchem/7.2.2        (D)    roary/3.13.0
-   apcluster/1.4.13         delly/1.2.6                inla/23.09.09           odgi/0.8.6                 sage/10.3
-   bamdam/24dec14           demucs/4.0.1               intarna/3.4.0           orthofinder/2.5.5          salmon/1.10.3     (D)
-   bcftools/1.21     (D)    dendropy/4.6.1             kb-python/0.28.2        panaroo/1.3.4              samtools/1.21     (D)
-   bcl2fastq2/2.20.0        edta/2.2.x                 kraken/2.1.3            panaroo/1.5.1       (D)    seqtk/1.4
-   bifrost/1.1.4            fastq-screen/0.16.0        krakenuniq/1.0.4        pcangsd/1.36.1             snakemake/7.32.4
-   bowtie/2.5.4      (D)    fastqc/0.12.1              macs/3.0.1              pggb/0.6.0                 sniffles/2.3.2
-   braker/2.1.6             freeclimber/0.4.0          manta/1.6.0             phyx/1.1.1                 stacks/2.65       (D)
-   busco/5.4.7              gffutils/0.12.0            metaphlan/4.1.1         prokka/1.14.5              tidyverse/2.0.0
-   buscophylo/1.3           gmt/6.4.0                  metawibele/0.4.7        pyscf/2.7.0                toga/1.1.7
-   cactus/2.8.4             gromacs/2024.2.gpu         mitohifi/3.2.2          qiime2/2022.2              trinity/2.15.1
-   climlab/0.8.2            gromacs/2024.2      (D)    moseq2/1.3.0            qiime2/2024.10      (D)    vcftools/0.1.16
-   climlab/0.9.1     (D)    gubbins/3.4                multiqc/1.27            quast/5.2.0
-   coinfinder/1.2.1         heasoft/6.33.2             nanoreviser/1.0         r/4.4.1             (D)
-   cp2k/2024.1       (D)    humann/3.9                 newick_utils/1.6        repeatmodeler/2.0.5
-
------------------------------------------------------ /opt/ohpc/pub/modulefiles -----------------------------------------------------
-   autotools       gnu13/13.2.0      intel/2024.0.0   (D)    ohpc       (L)    pmix/4.2.9      ucx/1.17.0
-   cmake/3.24.2    hwloc/2.11.1      intel/2024.2.0          os                prun/2.2        valgrind/3.23.0
-   gnu12/12.2.0    intel/2023.2.1    libfabric/1.18.0        papi/6.0.0        spack/0.22.2
+---------------------------------------------------------------- /opt/ohpc/pub/modulefiles ----------------------------------------------------------------
+   cmake/4.3.2     gnu14/14.2.0    hwloc/2.13.0        ohpc (L)    pmix/4.2.9    ucx/1.20.1
+   gnu13/13.2.0    gnu15/15.2.0    libfabric/1.18.0    os          prun/2.2      valgrind/3.27.0
 
   Where:
    D:  Default Module
@@ -752,7 +650,7 @@ Use "module keyword key1 key2 ..." to search for all possible modules matching a
 
 </details>
 
-If you don't see the software you need, you can install it yourself using conda, mamba, pip, etc. If you are having trouble installing it, you can submit a ticket by emailing hummingbird@ucsc.edu. It is okay to compile software on the login node.
+If you don't see the software you need, you can install it yourself using conda, mamba, pip, or custom GitHub instructions. If you are having trouble installing software, you can submit a ticket by emailing help@ucsc.edu. It is okay to compile software on the login node.
 
 Here is an example command for loading the bcftools module:
 
@@ -762,7 +660,7 @@ module load bcftools/1.16
 
 ## 13. Conda
 
-If the software you want isn't pre-installed on your cluster, conda is a good fallback. On Hummingbird, load miniconda first:
+If the software you want isn't pre-installed on your cluster, conda is a good fallback. Conda is a package and environment manager. It installs a program together with the libraries it needs into a separate *environment*, so tools that need different versions of the same library do not conflict. Miniconda is a small installer that provides conda. On Hummingbird, miniconda is available as a module, so load it first:
 
 ```
 module load miniconda3
@@ -792,6 +690,8 @@ If so, use their package recipe to install!
 conda install bioconda::pbmm2
 ```
 
+You can install many software packages in the same conda environment. Conda handles the conflicts. 
+
 To deactivate the environment, use `conda deactivate`.
 
 <details>
@@ -812,7 +712,7 @@ conda remove --name <env_name> --all
 
 ## 14. Permissions
 
-Say you write a quick bash script that prints "Hello World" using the echo command.
+Imagine you write a quick bash script that prints "Hello World" using the echo command.
 
 ```
 echo 'echo "Hello World"' > test.sh
@@ -832,21 +732,17 @@ ls -lah test.sh
 -rw-r--r-- 1 matt staff 19 Jul  7 16:44 test.sh
 ```
 
-Permissions are organized by owner, group, others, in the format of read (r), write (w), execute (x).
+Permissions are organized by owner, group, others, in the format of read (r), write (w), execute (x). The first character is the file type. The next nine characters are three groups of three, one group for each kind of user. Within each group the order is always read, write, execute, and a `-` means that permission is off.
 
-<details>
-<summary><b>How to read <code>-rw-r--r--</code></b></summary>
+```
+ -    rw-    r--    r--
+ │     │      │      └─ everyone else:  read only
+ │     │      └──────── group:          read only
+ │     └─────────────── owner (you):    read and write, no execute
+ └───────────────────── file type:      - is a file, d is a directory
+```
 
-| Characters | Who | Meaning here |
-|---|---|---|
-| `-` | | A normal file. `d` means a directory |
-| `rw-` | Owner (you) | Read and write, no execute |
-| `r--` | Group | Read only |
-| `r--` | Everyone else | Read only |
-
-</details>
-
-This file does not have executable permissions. Let's change that using `chmod`.
+This file does not have executable permissions. Let's change that using `chmod`. In `a+x`, the `a` means all users (owner, group and everyone else), the `+` adds a permission, and the `x` is execute. `u+x` would add execute for the owner only, and `a-w` would remove write for everyone.
 
 ```
 chmod a+x test.sh
@@ -867,59 +763,13 @@ Hello World
 
 ## 15. Array Jobs
 
-Array jobs are a powerful feature of Slurm that let you run many similar jobs in parallel, each with a different input or task index. Instead of writing and submitting 30 separate Slurm scripts or running one Slurm script with a for loop, you can submit one script with `--array=0-29` and let Slurm manage the parallelism.
+An array job runs the same script many times in parallel, once for each input. Slurm calls each copy a *task* and gives it its own number in the variable `$SLURM_ARRAY_TASK_ID`. Your script uses that number to pick its input.
 
-This is especially useful when you need to run the same analysis (e.g., samtools view, python3 script.py) across multiple input files or samples.
+This is useful when you need to run the same analysis (e.g., `samtools view`) on many files or samples. Instead of writing 30 separate Slurm scripts, or one Slurm script with a for loop, you submit one script with `--array=0-29` and let Slurm run the tasks in parallel.
 
 The examples below use the lab-colibri partition on Elkhorn.
 
-### 15.1 The Basic Pattern
-
-Each array task gets its own number in `$SLURM_ARRAY_TASK_ID`. Your script uses that number to pick its input.
-
-```
-#!/bin/bash
-#SBATCH --job-name=process_ont
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=<cruzid>@ucsc.edu
-#SBATCH --output=process_ont_%A_%a.out
-#SBATCH --error=process_ont_%A_%a.err
-#SBATCH --mem=40G
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=6
-#SBATCH --time=3-0
-#SBATCH --array=0-99
-#SBATCH --partition=lab-colibri
-#SBATCH --qos=pi-jkoc
-#SBATCH --account=pi-jkoc
-
-array_id=$SLURM_ARRAY_TASK_ID
-export array_id
-
-python3 -u process_ont.py
-```
-
-In your Python script, you can extract the array ID (integer) and use it to index a list, dictionary, etc. If I had a dictionary of samples to process, I just have to specify the total number of samples I have in the Slurm script.
-
-```python
-import os
-
-array_id = int(os.environ["array_id"])
-
-samples = {
-    "sample1": ["data"],
-    "sample2": ["data"],
-    # ...
-}
-
-sample_name = list(samples.keys())[array_id]
-print(f"Processing {sample_name}")
-```
-
-> [!IMPORTANT]
-> Make sure `--array=0-N` in your Slurm script matches the number of items you're looping over. With 0-based indexing, 100 samples need `--array=0-99`.
-
-### 15.2 Worked Example
+### 15.1 A Worked Example in Bash
 
 For example, let's say I have 33 mapped BAM files that I want to filter to only include primary alignments from chromosome 6 with MAPQ > 30.
 
@@ -984,10 +834,7 @@ If I want to use samtools view to filter each file, I have a few options:
 
 In the array job, each task (one sample, one file) has its own stderr and stdout, and any errors thrown don't affect the other tasks or cause the parent job to fail. Assuming I have access to the compute resources needed to filter all 33 BAM files in parallel, the array job finishes 33X faster than using a for loop. This speedup is critical, because tomorrow, my mentor might change their mind and say that we need to filter at MAPQ > 40 instead of MAPQ > 30.
 
-Here is how I would code an array job to process these samples:
-
-<details>
-<summary><b>samtools array job in bash</b></summary>
+Here is how I would code an array job to process these samples. The whole job is one Slurm script, with no separate program.
 
 ```bash
 #!/bin/bash
@@ -1057,7 +904,8 @@ samtools index "$input_bam"
 samtools view -b -q 30 -F 2304 "$input_bam" chr6 > "$output_bam"
 ```
 
-</details>
+> [!IMPORTANT]
+> Make sure `--array=0-N` in your Slurm script matches the number of items you're looping over. With 0-based indexing, 33 files need `--array=0-32`.
 
 A few notes:
 
@@ -1065,9 +913,54 @@ A few notes:
 2. It's helpful to add print statements (e.g., `echo "Input BAM: $input_bam"`) for debugging purposes.
 3. The header flags `#SBATCH --output=samtools_%A_%a.out` and `#SBATCH --error=samtools_%A_%a.err` tell Slurm to create separate output and error files for each task, named `samtools_<job_id>_<array_task_id>`.
 
-### 15.3 Array Jobs in Python
+### 15.2 Picking the Input in Python
 
-I don't like writing code in bash because the syntax is not very intuitive or human readable. When I cook up my own array jobs, I write a Python script to be executed inside the Slurm script.
+The task number can also go to a Python script. Slurm puts `SLURM_ARRAY_TASK_ID` in the environment of every task, and Python reads it with the `os` module.
+
+```
+#!/bin/bash
+#SBATCH --job-name=process_samples
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=<cruzid>@ucsc.edu
+#SBATCH --output=process_samples_%A_%a.out
+#SBATCH --error=process_samples_%A_%a.err
+#SBATCH --mem=40G
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=6
+#SBATCH --time=3-0
+#SBATCH --array=0-99
+#SBATCH --partition=lab-colibri
+#SBATCH --qos=pi-jkoc
+#SBATCH --account=pi-jkoc
+
+# -u prints the script's output to the .out file as it runs, not only at the end
+python3 -u process_samples.py
+```
+
+In the Python script, the task number picks one item from a list or dictionary. If I had a dictionary of samples to process, I only need the number of samples to match `--array` in the Slurm script.
+
+```python
+import os
+
+# Slurm sets this variable for each task: 0 for the first task, 1 for the second, and so on.
+# It is text, so convert it to an integer.
+array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
+
+# One entry per sample. 100 samples here, so the Slurm script uses --array=0-99.
+samples = {
+    "sample1": ["data"],
+    "sample2": ["data"],
+    # ...
+}
+
+# Task 0 gets the first sample, task 1 the second, and so on.
+sample_name = list(samples.keys())[array_id]
+print(f"Processing {sample_name}")
+```
+
+### 15.3 Scripting in Python
+
+I don't like writing code in bash because the syntax is not very intuitive or human readable. You can write the whole workflow in Python and use the Slurm script only to run it. Here is the samtools job from [section 15.1](#151-a-worked-example-in-bash), with the work moved into a Python script.
 
 ```bash
 #!/bin/bash
@@ -1088,7 +981,7 @@ I don't like writing code in bash because the syntax is not very intuitive or hu
 python3 -u filter_bam.py
 ```
 
-Here, each array task will execute `python3 filter_bam.py`. I include the script below.
+Each array task runs `python3 filter_bam.py`. Here is the script.
 
 <details>
 <summary><b>filter_bam.py</b></summary>
@@ -1097,8 +990,7 @@ Here, each array task will execute `python3 filter_bam.py`. I include the script
 import os
 import subprocess
 
-working_directory = "/scratch/mglasena/hb_tutorial/"
-
+# The 33 input BAM files. Task N processes the file at position N (0-based).
 bam_files = [
 	"/scratch/mglasena/hb_tutorial/HG002.dedup.trimmed.hg38.bam",
 	"/scratch/mglasena/hb_tutorial/HG003.dedup.trimmed.hg38.bam",
@@ -1135,30 +1027,37 @@ bam_files = [
 	"/scratch/mglasena/hb_tutorial/NA24695.dedup.trimmed.hg38.bam"
 ]
 
+
 def index_bam(bam_file):
+	# samtools needs an index (.bai) to read one chromosome from a BAM
 	index_command = "samtools index {bam}".format(bam = bam_file)
+	# check=True stops the script with an error if samtools fails.
+	# shell=True runs the command through the shell, as if you typed it.
 	subprocess.run(index_command, check=True, shell=True)
 
 def filter_bam(bam_file):
-	# Define output bam file name
+	# Name the output after the input, e.g. HG002...bam -> HG002...chr6.primary.mapq30.bam
 	output_bam = bam_file.replace(".bam", ".chr6.primary.mapq30.bam")
 
-	# Define samtools view command
+	# -q 30 keeps reads with MAPQ >= 30, -F 2304 drops secondary and supplementary
+	# alignments, and chr6 keeps only reads on chromosome 6
 	samtools_command = "samtools view -b -q 30 -F 2304 {input_bam} chr6 > {output_bam}".format(input_bam = bam_file, output_bam = output_bam)
 
-	# Execute samtools view command
 	subprocess.run(samtools_command, check=True, shell=True)
 
 def main():
+	# Slurm sets SLURM_ARRAY_TASK_ID for each task (0 to 32 here)
 	array_id = int(os.environ["SLURM_ARRAY_TASK_ID"])
 	print("Array ID: {}".format(array_id))
 
+	# Pick this task's file
 	bam_file = bam_files[array_id]
 	print("Processing {file}".format(file = bam_file))
 
 	index_bam(bam_file)
 	filter_bam(bam_file)
 
+# Run main() only when the file is run as a script, not when it is imported
 if __name__ == "__main__":
 	main()
 ```
