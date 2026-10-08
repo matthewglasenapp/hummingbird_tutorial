@@ -3,68 +3,83 @@
 <h1 align="center">Hummingbird Tutorial</h1>
 
 <p align="center">
-  <b>Matt's guide to UCSC's Hummingbird HPC cluster</b>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/cluster-Hummingbird%20(Elkhorn)-blue" alt="Cluster">
-  <img src="https://img.shields.io/badge/scheduler-Slurm-lightgrey" alt="Scheduler">
-  <img src="https://img.shields.io/badge/audience-new%20lab%20members-green" alt="Audience">
+  <b>Matt's guide to UCSC's Hummingbird and Elkhorn clusters</b>
 </p>
 
 <br/>
 
 <p align="center">
-  <a href="#quick-start"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Quick_Start-1F2937?style=for-the-badge&logo=gnubash&logoColor=white"><img src="https://img.shields.io/badge/Quick_Start-E5E7EB?style=for-the-badge&logo=gnubash&logoColor=1F2937" alt="Quick Start"></picture></a>
+  <a href="#part-i-getting-started"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Getting_Started-1F2937?style=for-the-badge&logo=gnubash&logoColor=white"><img src="https://img.shields.io/badge/Getting_Started-E5E7EB?style=for-the-badge&logo=gnubash&logoColor=1F2937" alt="Getting Started"></picture></a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="#partitions"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Partitions-1F2937?style=for-the-badge&logo=slurm&logoColor=white"><img src="https://img.shields.io/badge/Partitions-E5E7EB?style=for-the-badge&logo=slurm&logoColor=1F2937" alt="Partitions"></picture></a>
+  <a href="#part-ii-running-jobs"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Running_Jobs-1F2937?style=for-the-badge&logo=slurm&logoColor=white"><img src="https://img.shields.io/badge/Running_Jobs-E5E7EB?style=for-the-badge&logo=slurm&logoColor=1F2937" alt="Running Jobs"></picture></a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="#array-jobs"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Array_Jobs-1F2937?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/Array_Jobs-E5E7EB?style=for-the-badge&logo=python&logoColor=1F2937" alt="Array Jobs"></picture></a>
+  <a href="#part-iii-software"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Software-1F2937?style=for-the-badge&logo=anaconda&logoColor=white"><img src="https://img.shields.io/badge/Software-E5E7EB?style=for-the-badge&logo=anaconda&logoColor=1F2937" alt="Software"></picture></a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="#troubleshooting"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Troubleshooting-1F2937?style=for-the-badge&logo=stackoverflow&logoColor=white"><img src="https://img.shields.io/badge/Troubleshooting-E5E7EB?style=for-the-badge&logo=stackoverflow&logoColor=1F2937" alt="Troubleshooting"></picture></a>
+  <a href="#part-iv-scaling-up"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Scaling_Up-1F2937?style=for-the-badge&logo=python&logoColor=white"><img src="https://img.shields.io/badge/Scaling_Up-E5E7EB?style=for-the-badge&logo=python&logoColor=1F2937" alt="Scaling Up"></picture></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="#cheat-sheet"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Cheat_Sheet-1F2937?style=for-the-badge&logo=readthedocs&logoColor=white"><img src="https://img.shields.io/badge/Cheat_Sheet-E5E7EB?style=for-the-badge&logo=readthedocs&logoColor=1F2937" alt="Cheat Sheet"></picture></a>
 </p>
 
 <br/>
-
-> [!IMPORTANT]
-> 1. Hummingbird moved to new hardware called Elkhorn. When you log in, the prompt shows `elkhorn`. Node names are now `node-XX`, not `hbnode-XX`.
-> 2. `srun` does not work on Elkhorn. Use `salloc` for interactive work.
-> 3. Scratch moved. Use `/scratch/<your_cruzid>`. The old `/hb/scratch` path does not work.
-<!-- CHECK (Matt): confirm /scratch/<cruzid> also exists on compute nodes, not only on the login node. -->
 
 <details>
 <summary><b>Table of Contents</b></summary>
 
-- [Introduction](#introduction)
-- [Quick Start](#quick-start)
-- [Logging In](#logging-in)
-- [Where to Put Your Files](#where-to-put-your-files)
-- [Partitions](#partitions)
-  - [windfall](#windfall)
-  - [Colibri Partitions](#colibri-partitions)
-- [Basic Slurm Commands](#basic-slurm-commands)
-- [Submit a Slurm Job](#submit-a-slurm-job)
-  - [Create a Slurm Script](#create-a-slurm-script)
-  - [Submit the Slurm Script](#submit-the-slurm-script)
-  - [Cancel a Slurm Job](#cancel-a-slurm-job)
-- [Interactive Slurm Jobs](#interactive-slurm-jobs)
-- [Software on Hummingbird](#software-on-hummingbird)
-- [Conda](#conda)
-- [File Transfer](#file-transfer)
-- [Efficiency](#efficiency)
-- [Permissions](#permissions)
-- [Array Jobs](#array-jobs)
-  - [The Basic Pattern](#the-basic-pattern)
-  - [Worked Example](#worked-example)
-  - [Array Jobs in Python](#array-jobs-in-python)
-- [Troubleshooting](#troubleshooting)
-- [Getting Help](#getting-help)
+**[Part I. Getting Started](#part-i-getting-started)**
+1. [Getting Help](#1-getting-help)
+2. [What Is a Cluster?](#2-what-is-a-cluster)
+3. [Hummingbird and Elkhorn](#3-hummingbird-and-elkhorn)
+4. [Logging In](#4-logging-in)
+5. [Where to Put Your Files](#5-where-to-put-your-files)
+6. [Moving Files](#6-moving-files)
+
+**[Part II. Running Jobs](#part-ii-running-jobs)**
+
+7. [Partitions](#7-partitions)
+8. [Watching the Queue](#8-watching-the-queue)
+9. [Writing and Submitting a Job](#9-writing-and-submitting-a-job)
+10. [Interactive Jobs](#10-interactive-jobs)
+11. [Checking Job Efficiency](#11-checking-job-efficiency)
+
+**[Part III. Software](#part-iii-software)**
+
+12. [Modules](#12-modules)
+13. [Conda](#13-conda)
+14. [Permissions](#14-permissions)
+
+**[Part IV. Scaling Up](#part-iv-scaling-up)**
+
+15. [Array Jobs](#15-array-jobs)
+16. [Elkhorn Daily Tips](#16-elkhorn-daily-tips)
+17. [Troubleshooting](#17-troubleshooting)
+
+**[Cheat Sheet](#cheat-sheet)**
 
 </details>
 
 <br/>
 
-## Introduction
+# Part I. Getting Started
+
+## 1. Getting Help
+
+Learn more about Slurm at:
+
+1. Hummingbird homepage, https://hummingbird.ucsc.edu/, and the Hummingbird Getting Started page, https://hummingbird.ucsc.edu/getting-started/
+2. Stanford Slurm tutorial: https://login.scg.stanford.edu/tutorials/job_scripts/
+3. ChatGPT
+
+If you are a regular user, you should join the Hummingbird Slack community: https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email
+
+The Hummingbird team also has weekly office hours on Thursday from 1:00 PM to 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
+
+You can also put in a ticket by emailing hummingbird@ucsc.edu.
+
+You can monitor cluster usage at https://hummingbird.ucsc.edu/current-usage/
+
+There are example Slurm scripts on Hummingbird located at `/hb/software/scripts`.
+
+## 2. What Is a Cluster?
 
 A cluster, or supercomputer, is a group of computers that work together and function as a single system. The advantage of using Hummingbird is that it has much more memory and storage than your own personal computers. We can submit jobs to run on Hummingbird and will be notified by email when they complete. We do not have to keep our computer running or monitor the progress.
 
@@ -76,34 +91,40 @@ The commands used to submit and monitor jobs on Hummingbird are mostly not Hummi
   <img src="https://github.com/user-attachments/assets/cdbfeb86-011c-4b89-85cf-e19cf8bf67e4" alt="compute_cluster" width="700">
 </p>
 
-<br/>
-
-## Quick Start
-
-These are the commands you will use most. Each one has its own section below.
-
-| Task | Command |
-|---|---|
-| Log in (VPN if off campus) | `ssh <your_cruzid>@hb.ucsc.edu` |
-| Go to your scratch space | `cd /scratch/<your_cruzid>` |
-| See the partitions | `sinfo` |
-| See your jobs | `squeue -u <your_cruzid>` |
-| Submit a job | `sbatch my_job.sh` |
-| Cancel a job | `scancel <job_id>` |
-| Get an interactive node | `salloc --partition=windfall --account=windfall --qos=windfall --mem=10G --ntasks=1 --cpus-per-task=4 --time=2:00:00` |
-| Check a finished job | `seff <job_id>` |
-| Find installed software | `module avail` |
+Every cluster has two kinds of computers. You log in to the **login node**. The work runs on the **compute nodes**. Slurm decides which compute node runs your job.
 
 > [!WARNING]
-> Do not run code or scripts on the login node. It slows the cluster down for all users. Use `sbatch` or `salloc`.
+> Do not run code or scripts on the login node. It slows it down for all users. Use `sbatch` or `salloc`, which are covered in [Part II](#part-ii-running-jobs).
 
-<br/>
+## 3. Hummingbird and Elkhorn
 
-## Logging In
+UCSC has two Slurm systems that you will use. They work the same way. They have different nodes and different partitions.
+
+| | Hummingbird | Elkhorn |
+|---|---|---|
+| What it is | The campus cluster | The system for PI-owned nodes |
+| Log in with | `ssh <your_cruzid>@hb.ucsc.edu` | `ssh <your_cruzid>@elkhorn.ucsc.edu` |
+| Our lab's nodes | | node-38 and node-39 (lab-colibri), node-40 (lab-colibri-hmem) |
+| Shared queue | 128x24 and other partitions | windfall, which spans every node on Elkhorn |
+| Node names | `node-XX` | `node-XX` |
+| Home | `/home/<your_cruzid>` | The same directory |
+| Scratch | `/scratch/<your_cruzid>` | The same directory |
+
+Both systems share your home and scratch directories, so a file you write on one is there on the other.
+
+Use Elkhorn for work on our lab's nodes, and use windfall when you are stuck in a queue. Most of Elkhorn is idle most of the time. Use Hummingbird for the campus partitions.
+
+Access to Elkhorn requires your PI to have sponsored you. You can check whether you are linked to the pi-jkoc lab account with the following command:
+
+```
+sacctmgr show assoc user=$USER format=cluster,account,partition,qos%30,share
+```
+
+## 4. Logging In
 
 If not on the campus WiFi, you will need to be connected to the campus VPN.
 
-To log in to Hummingbird, first open the terminal application (Mac users) or PuTTY (Windows users). We will use the ssh command to access Hummingbird, which stands for secure shell and provides a secure connection between your computer and the Hummingbird server. To log in, you will use the following command:
+To log in, first open the terminal application (Mac users) or PuTTY (Windows users). We will use the ssh command, which stands for secure shell and provides a secure connection between your computer and the server. To log in to Hummingbird, you will use the following command:
 
 ```
 ssh <your_cruzid>@hb.ucsc.edu
@@ -111,77 +132,52 @@ ssh <your_cruzid>@hb.ucsc.edu
 
 Replace `<your_cruzid>` with your UCSC username in your command. You will be prompted to enter your password. For security measures, you will not be able to see the characters you are entering. Type your password and press enter.
 
-A welcome message with the cluster policies appears on your screen. Read it once.
-
-<details>
-<summary><b>Example login message</b></summary>
-
-> [!NOTE]
-> This output is from 2025, before the move to Elkhorn. Partition and node names are different now.
-<!-- CHECK (Matt): paste the current Elkhorn login banner here. The 72-core limit and /hb/scratch lines may be out of date. -->
+To log in to Elkhorn, use `elkhorn.ucsc.edu` rather than `hb.ucsc.edu`.
 
 ```
- _                               _             _     _         _
-| |                             (_)           | |   (_)       | |
-| |__  _   _ _ __ ___  _ __ ___  _ _ __   __ _| |__  _ _ __ __| |
+ssh <your_cruzid>@elkhorn.ucsc.edu
+```
+
+The prompt shows which system you are on, for example `[mglasena@hb ~]$` on Hummingbird and `[mglasena@elkhorn ~]$` on Elkhorn.
+
+A welcome message appears on your screen.
+
+<details>
+<summary><b>Example Hummingbird login message</b></summary>
+
+```
+ _                               _             _     _         _ 
+| |__  _   _ _ __ ___  _ __ ___ (_)_ __   __ _| |__ (_)_ __ __| |
 | '_ \| | | | '_ ` _ \| '_ ` _ \| | '_ \ / _` | '_ \| | '__/ _` |
 | | | | |_| | | | | | | | | | | | | | | | (_| | |_) | | | | (_| |
 |_| |_|\__,_|_| |_| |_|_| |_| |_|_|_| |_|\__, |_.__/|_|_|  \__,_|
-                                          __/ |
-                                        |    /
-                                        |___/
+                                         |___/                   
 -----------------------------------------------------------------------------
-!! POLICIES - READ !!
-** Faiure to adhere to these policies will result in job cancellation. **
------------------------------------------------------------------------------
-1) JOBS & QUEUES
-** YOU MUST USE THE SLURM BATCH SYSTEM TO RUN SOFTWARE **
-- 72 CPU core maximum per user
-- Always apply time limits to slurm script (#SBATCH --time=)
-- For non-exclusive access to a node apply BOTH memory & cpu limits
-
-2) DATA TRANSFERS
-- All data transfers can be done directly on hb.ucsc.edu or via Globus
-
-3) HOME QUOTA, SCRATCH & DATA POLICY
-- Disk quota per user (home):  1TB
-- /hb/scratch is not backed up and data older than 120 days may be deleted
-- Data and Backup Policy: https://hummingbird.sites.ucsc.edu/documentation/hummingbird-data-storage-and-backup-policy/
-
-4) GETTING HELP
-** Have questions? Need help? Want to speak to an expert? **
-- Join the Hummingbird Zoom-in Help Clinic Thursdays at 1PM PDT
-- https://ucsc.zoom.us/j/93463299124?pwd=RFZvZzlYSjIzNnoxblFsRUV6aTZGZz09 (UCSC login required)
-- Put in a ticket by emailing hummingbird@ucsc.edu
------------------------------------------------------------------------------
-** More information at https://hummingbird.ucsc.edu/ **
------------------------------------------------------------------------------
-** Join us on the Hummingbird-cluster Slack server!! **
+** Join us on the UCSC HPC Slack server!! **
 
 Join the community to get real-time support from your admins and collaborators.
 
 https://join.slack.com/t/ucschummingbi-lph3072/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg
 -----------------------------------------------------------------------------
-Last login: Mon Jun 30 13:34:30 2025 from 128.114.226.87
+Last login: Fri Oct  2 16:06:57 2026 from 128.114.224.17
+[mglasena@hb ~]$
 ```
 
 </details>
 
-After connecting to Hummingbird, you are on the login node. The prompt shows `elkhorn`. This is a place to navigate and edit files and monitor jobs. Do not run code or scripts on the login node.
+After connecting, you are on the login node. This is a place to navigate and edit files and monitor jobs. Do not run code or scripts on the login node. It will slow it down for all users.
 
-<br/>
+## 5. Where to Put Your Files
 
-## Where to Put Your Files
-
-When you log in to Hummingbird, you are automatically taken to your home directory. To see the path of your working directory, use the `pwd` command, which stands for "print working directory."
+When you log in, you are automatically taken to your home directory. To see the path of your working directory, use the `pwd` command, which stands for "print working directory."
 
 ```
 pwd
 ```
 
-After running this command, `/hb/home/<your_cruzid>` will be printed to the terminal. This is your personal home directory, where you can store files and data. Hummingbird users have a 1 TB storage quota in their home directory. I recommend using `/hb/home/` for longer-term storage, including stable files and software installs.
+After running this command, `/home/<your_cruzid>` will be printed to the terminal. This is your personal home directory, where you can store files and data. Hummingbird users have a 1 TB storage quota in their home directory. I recommend using your home directory for longer-term storage, including stable files and software installs.
 
-You'll want to work mostly in your scratch directory, at `/scratch/<your_cruzid>`. This is a great location to test new scripts and to store intermediate files.
+You'll want to work mostly in your scratch directory, at `/scratch/<your_cruzid>`, where there is no storage quota. This is a great location to test new scripts and to store intermediate files.
 
 ```
 cd /scratch/<your_cruzid>
@@ -189,24 +185,74 @@ cd /scratch/<your_cruzid>
 
 | Location | Use it for | Notes |
 |---|---|---|
-| `/hb/home/<your_cruzid>` | Software installs, scripts, files you keep | 1 TB quota |
-| `/scratch/<your_cruzid>` | Running jobs, intermediate files | Not backed up |
-| `/hb/groups/cornejo_lab/` | Shared lab data on beegfs | Ask Matt before you write here |
-| `/data/colibri/cornejo_lab/` | Lab storage on the Colibri file server | 70 TB, shared by the lab |
+| `/home/<your_cruzid>` | Software installs, scripts, files you keep | 1 TB quota |
+| `/scratch/<your_cruzid>` | Running jobs and intermediate files | Not backed up. Old files may be deleted, see the [data and backup policy](https://hummingbird.sites.ucsc.edu/documentation/hummingbird-data-storage-and-backup-policy/) |
+
+> [!WARNING]
+> Always write `/scratch/<your_cruzid>` in your scripts. `/hb/scratch` also works on the login nodes, but it does not exist on the compute nodes, so a job that uses it fails.
+
+Work in your scratch directory by default. Ask your PI where to store important files.
 
 > [!CAUTION]
 > Scratch is not backed up. Keep a copy of anything you cannot regenerate in your home directory or on your own computer.
-<!-- CHECK (Matt): confirm the scratch quota and deletion policy for /scratch, and whether new members should use /data/colibri/cornejo_lab. -->
+
+## 6. Moving Files
+
+For transferring files to and from Hummingbird, you can use `scp` or `sftp`. Note that if you are not on the campus WiFi, you must be connected to the VPN. Run `scp` on your own computer, not on the cluster.
+
+Example of a transfer from Matt's Desktop to Hummingbird:
+
+```
+scp /Users/matt/Desktop/test.txt mglasena@hb.ucsc.edu:/scratch/mglasena/
+```
+
+Example of a transfer from Hummingbird to Matt's Desktop:
+
+```
+scp mglasena@hb.ucsc.edu:/scratch/mglasena/test.txt /Users/matt/Desktop/
+```
+
+There are desktop applications with nice graphical interfaces for file transfer and management (e.g., Cyberduck: https://cyberduck.io/).
+
+For larger data transfers, see Hummingbird's Globus recommendations: https://hummingbird.ucsc.edu/documentation/
 
 <br/>
 
-## Partitions
+# Part II. Running Jobs
+
+## 7. Partitions
 
 Let's learn more about the cluster.
 
 ```
 sinfo
 ```
+
+The different partitions are listed. Partitions are groups of nodes with different configurations. The `STATE` column shows whether a node is free (`idle`), partly used (`mix`), full (`alloc`), or being taken out of service (`drng`).
+
+### 7.1 Hummingbird Partitions
+
+```
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+128x24*      up   infinite     11    mix node-[06,08-10,12,15,18-19,21-23]
+128x24*      up   infinite      4  alloc node-[07,11,13-14]
+128x24*      up   infinite      3   idle node-[16-17,20]
+96x24gpu4    up   infinite      1    mix node-24
+256x44       up   infinite      1   mix- node-25
+```
+
+`128x24` is the default partition (the `*`). `96x24gpu4` has GPUs, and `256x44` has more memory.
+
+> [!IMPORTANT]
+> On the 128x24 Hummingbird partitions, there are hard-coded CPU limits (no more than 72 CPUs per user at a time). If you submit an array job on the 128x24 partition, the job scheduler will regulate the number of tasks allowed to run simultaneously.
+
+To use the 128x24 partition, include the following in your Slurm script header.
+
+```
+#SBATCH --partition=128x24
+```
+
+### 7.2 Elkhorn Partitions
 
 ```
 PARTITION        AVAIL  TIMELIMIT  NODES  STATE NODELIST
@@ -219,53 +265,27 @@ lab-colibri         up   infinite      2    mix node-[38-39]
 lab-colibri-hmem    up   infinite      1    mix node-40
 ```
 
-The different partitions are listed. Partitions are groups of nodes with different configurations. The `STATE` column shows whether a node is free (`idle`), partly used (`mix`), full (`alloc`), or being taken out of service (`drng`).
-
 | Partition | Nodes | Who can use it | Header lines |
 |---|---|---|---|
-| `windfall` | about 88 | Everyone | `--partition=windfall --account=windfall --qos=windfall` |
 | `lab-colibri` | node-38, node-39 | Our lab | `--partition=lab-colibri --account=pi-jkoc --qos=pi-jkoc` |
 | `lab-colibri-hmem` | node-40 | Our lab | `--partition=lab-colibri-hmem --account=pi-jkoc --qos=pi-jkoc` |
-| `512x64` | node-29, node-30 | | |
-<!-- CHECK (Matt): who can use 512x64, and what are its header lines? -->
+| `windfall` | every node | Everyone on Elkhorn | `--partition=windfall` |
+| `512x64` | node-29, node-30 | Another lab's nodes | Reach them through windfall |
 
-### windfall
-
-windfall is the big shared partition, and it is the default (the `*` in `sinfo`). It has about 88 nodes with 112 CPUs each.
-
-> [!WARNING]
-> windfall is preemptible. If the owners of a node need it, Slurm stops your job. Add `#SBATCH --requeue` so that Slurm puts the job back in the queue and runs it again. Write your scripts so that they can start over safely.
-
-```
-#SBATCH --partition=windfall
-#SBATCH --account=windfall
-#SBATCH --qos=windfall
-#SBATCH --requeue
-```
-
-<details>
-<summary><b>windfall tips for large jobs</b></summary>
-
-- Slurm puts many small array tasks on one node if they fit. 17 tasks with 4 CPUs each can all land on one 112-core node. If you want one task per node, for example for downloads, add `#SBATCH --exclusive`. Check where tasks run with `squeue -u <your_cruzid> -o '%.14i %.8T %M %N'`.
-- Compute nodes have a 1 Gb network link to the outside. A single download stream gets about 45 MB/s, so 3 or 4 streams fill one node.
-- Nodes 29 and 33 to 36 have a slower 100 Mb network link. For jobs that download data, add `#SBATCH --exclude=node-29,node-33,node-34,node-35,node-36`.
-
-</details>
-
-### Colibri Partitions
+#### Colibri
 
 Our lab has some private nodes with increased CPU and RAM. We have two nodes on the partition `lab-colibri` (node-38, node-39) and one high memory node on the partition `lab-colibri-hmem` (node-40). node-38 and node-39 have 112 CPUs and 1000 GB RAM each. node-40 is a high memory node with 112 CPUs and 2000 GB RAM.
 
 > [!IMPORTANT]
 > There are no hard-coded CPU limits on the lab-colibri and lab-colibri-hmem partitions. Please be considerate of how much compute resources you are allocating at a single time. If the nodes are idle and you have a high priority job, feel free to allocate a lot of resources. If there are many people in the queue and your job is not time-sensitive, try to occupy fewer CPUs to share the resource!
 
-Note on array jobs (covered below): because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as possible given the available CPU and RAM. You can set the number of array tasks that run at the same time like this:
+Because the lab-colibri partition does not have a hard-coded CPU limit, it will run as many array tasks as possible given the available CPU and RAM. You can set the number of array tasks that run at the same time like this:
 
 ```
 #SBATCH --array=0-999%10
 ```
 
-This says create 1,000 array tasks (0-based indexing), but only run 10 tasks at a time.
+This says create 1,000 array tasks (0-based indexing), but only run 10 tasks at a time. [Section 15](#15-array-jobs) covers array jobs.
 
 To target node-38 and/or node-39, include the following in your Slurm script header.
 
@@ -283,21 +303,30 @@ node-40 is on a different partition, `lab-colibri-hmem`. To target node-40, incl
 #SBATCH --account=pi-jkoc
 ```
 
-<br/>
+#### windfall
 
-## Basic Slurm Commands
+In addition to our lab's nodes, we also have access to other lab groups' nodes when they're idle! The windfall partition (`--partition=windfall`) spans every node in the cluster, and it has no CPU limit. It is the default partition on Elkhorn (the `*` in `sinfo`).
 
-Check the Hummingbird queue to see what jobs are currently running.
+> [!WARNING]
+> If your job is running on another lab's node and someone from that lab requests it, your job is canceled and does not restart. So you need to build your own verification that your jobs actually finished, or set up requeuing ([section 16.1](#161-requeuing)).
+
+This works the same with our nodes. When ours are idle, people from outside the group can end up on our nodes via windfall. If we then submit a job that needs those resources, theirs gets canceled, and ours runs instead (usually within a minute). Importantly, we can't get pre-empted or canceled on our own nodes.
+
+```
+#SBATCH --partition=windfall
+#SBATCH --requeue
+```
+
+## 8. Watching the Queue
+
+Check the queue to see what jobs are currently running.
 
 ```
 squeue
 ```
 
 <details>
-<summary><b>Example squeue output</b></summary>
-
-> [!NOTE]
-> This output is from 2025, before the move to Elkhorn. Partition and node names are different now.
+<summary><b>Example squeue output from Hummingbird (2025)</b></summary>
 
 ```
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
@@ -476,17 +505,14 @@ squeue -u mglasena
             407851    128x24 genotype mglasena  R 5-21:24:31      1 hbnode-17
 ```
 
-My job (id 407851, name genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17, which was part of the old 128x24 partition. Let's get more detail about this job using `scontrol show job <job_id>`.
+My job (id 407851, name genotype) has been running for 5 days, 21 hours, 24 minutes, and 31 seconds on hbnode-17, which is part of the 128x24 partition. Let's get more detail about this job using `scontrol show job <job_id>`.
 
 ```
 scontrol show job 407851
 ```
 
 <details>
-<summary><b>Example scontrol output</b></summary>
-
-> [!NOTE]
-> This output is from 2025, before the move to Elkhorn. Partition and node names are different now.
+<summary><b>Example scontrol output from Hummingbird (2025)</b></summary>
 
 ```
 JobId=407851 JobName=genotype_d214
@@ -523,13 +549,11 @@ JobId=407851 JobName=genotype_d214
 
 </details>
 
-You can see that I have set a time limit of 7-00:00:00 for this job. I requested 24 CPUs and 120G of RAM. The Slurm script I submitted was `d214_haplotypecaller.sh`.
+You can see that I have set a time limit of 7-00:00:00 for this job. I requested 24 CPUs and 120G of RAM. The Slurm script I submitted was `/hb/scratch/mglasena/urchin_seq_2024/d214_haplotypecaller.sh`.
 
-<br/>
+## 9. Writing and Submitting a Job
 
-## Submit a Slurm Job
-
-### Create a Slurm Script
+### 9.1 Create a Slurm Script
 
 Let's use the nano text editor to write a Slurm script.
 
@@ -544,16 +568,15 @@ nano test.sh
 #SBATCH --mail-user=<cruzid>@ucsc.edu
 #SBATCH --output=test_%J.out
 #SBATCH --error=test_%J.err
-#SBATCH --partition=windfall
-#SBATCH --account=windfall
-#SBATCH --qos=windfall
-#SBATCH --requeue
+#SBATCH --partition=128x24
 #SBATCH --nodes=1
 #SBATCH --mem=40G
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=12
 #SBATCH --time=1-0
 ```
+
+To run the same job on Elkhorn, change the partition lines. See [section 7.2](#72-elkhorn-partitions).
 
 <details>
 <summary><b>What each header line means</b></summary>
@@ -563,8 +586,7 @@ nano test.sh
 | `--job-name` | The name `squeue` shows |
 | `--mail-type=ALL`, `--mail-user` | Email you when the job starts, ends, or fails |
 | `--output`, `--error` | Files for the job's normal output and its error messages. `%J` is the job ID |
-| `--partition`, `--account`, `--qos` | Which nodes to use. See [Partitions](#partitions) |
-| `--requeue` | Run the job again if windfall stops it |
+| `--partition`, `--account`, `--qos` | Which nodes to use. See [section 7](#7-partitions) |
 | `--nodes=1`, `--ntasks=1` | One copy of the program on one node |
 | `--cpus-per-task` | How many CPUs the program can use |
 | `--mem` | How much RAM the job can use. The job stops if it uses more |
@@ -572,7 +594,7 @@ nano test.sh
 
 </details>
 
-### Submit the Slurm Script
+### 9.2 Submit the Slurm Script
 
 Submit the job using the `sbatch <slurm_script>` command.
 
@@ -580,28 +602,64 @@ Submit the job using the `sbatch <slurm_script>` command.
 sbatch test.sh
 ```
 
-### Cancel a Slurm Job
+### 9.3 Cancel a Slurm Job
 
 You can cancel a running job at any moment using `scancel <job_id>`.
 
 If you accidentally run a job on the login node by mistake, you can kill the process with Ctrl + C or exit the shell window (this closes the connection).
 
-<br/>
-
-## Interactive Slurm Jobs
+## 10. Interactive Jobs
 
 You can run an interactive job using the `salloc` command. This is great for debugging. Slurm gives you a shell on a compute node, and you run commands there by hand.
 
+On Hummingbird:
+
 ```
-salloc --partition=windfall --account=windfall --qos=windfall --mem=10G --ntasks=1 --cpus-per-task=4 --time=2:00:00 --job-name=test
+salloc --partition=128x24 --mem=10G --ntasks=1 --cpus-per-task=4 --job-name=test
 ```
 
-> [!WARNING]
-> `srun` does not work on Elkhorn. Use `salloc`. When the prompt changes from `elkhorn` to a node name such as `node-37`, you are on the compute node. Type `exit` to give the node back.
+On Elkhorn, windfall is especially good for interactive sessions to test code:
+
+```
+salloc -p windfall --cpus-per-task 12 --mem=40G --time=4:00:00
+```
+
+When the prompt changes to a node name, such as `node-37`, you are on the compute node. Type `exit` to give the node back.
+
+## 11. Checking Job Efficiency
+
+You can see how efficient your Slurm jobs were using the following command: `seff <job_id>`.
+
+Let's inspect one of my recent jobs. This is a different job from the one above. Note that the `seff` command typically doesn't work while a job is still running.
+
+```
+seff 398476_150
+```
+
+```
+Job ID: 402098
+Array Job ID: 398476_150
+Cluster: hbhpc
+User/Group: mglasena/ucsc_p_all_usr
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 1-06:23:41
+CPU Efficiency: 80.49% of 1-13:45:44 core-walltime
+Job Wall-clock time: 04:43:13
+Memory Utilized: 26.46 GB
+Memory Efficiency: 66.15% of 40.00 GB
+```
+
+**Memory Utilized.** Array task 150 of Slurm job 398476 only used 26.46 GB of RAM. Next time I run a similar job, I can reduce requested RAM from 40.00 GB to 30.00 GB.
+
+**CPU Efficiency** is the amount of time the requested CPUs were actively doing work relative to the amount of time they were idle. In this case, 80% of the reserved CPU time was actively used for computations, and the remaining ~20% was idle. This is fairly efficient, but next time I could consider requesting slightly fewer CPUs. Note that CPU usage can vary drastically during the job if you have multiple commands in your Slurm job. Efficiency will be low when only one or a few steps require many CPUs, and the other steps cannot make use of multiple CPUs.
 
 <br/>
 
-## Software on Hummingbird
+# Part III. Software
+
+## 12. Modules
 
 There is a lot of pre-installed software on Hummingbird. Before installing a new software, check to see if it is already available:
 
@@ -611,9 +669,6 @@ module avail
 
 <details>
 <summary><b>Example module avail output</b></summary>
-
-> [!NOTE]
-> This output is from 2025, before the move to Elkhorn. Partition and node names are different now.
 
 ```
 --------------------------------------------------- /hb/software/moduledeps/spack ---------------------------------------------------
@@ -705,15 +760,7 @@ Here is an example command for loading the bcftools module:
 module load bcftools/1.16
 ```
 
-There are example Slurm scripts on Hummingbird located at `/hb/software/scripts`.
-
-> [!TIP]
-> Batch jobs do not always get the `module` command. If `module: command not found` appears in your `.err` file, add `source /etc/profile` near the top of your script.
-<!-- CHECK (Matt): confirm the right file to source on Elkhorn for lmod. -->
-
-<br/>
-
-## Conda
+## 13. Conda
 
 If the software you want isn't pre-installed on your cluster, conda is a good fallback. On Hummingbird, load miniconda first:
 
@@ -763,64 +810,7 @@ conda remove --name <env_name> --all
 > [!TIP]
 > Run `which <tool>` to see which copy of a program runs. If it shows `~/.local/bin` and not `~/.conda/envs/<env>/bin`, the environment is not active, or a pip install outside conda is in the way.
 
-<br/>
-
-## File Transfer
-
-For transferring files to and from Hummingbird, you can use `scp` or `sftp`. Note that if you are not on the campus WiFi, you must be connected to the VPN.
-
-Example of a transfer from Matt's Desktop to Hummingbird:
-
-```
-scp /Users/matt/Desktop/test.txt mglasena@hb.ucsc.edu:/scratch/mglasena/
-```
-
-Example of a transfer from Hummingbird to Matt's Desktop:
-
-```
-scp mglasena@hb.ucsc.edu:/scratch/mglasena/test.txt /Users/matt/Desktop/
-```
-
-Run `scp` on your own computer, not on Hummingbird.
-
-There are desktop applications with nice graphical interfaces for file transfer and management (e.g., Cyberduck: https://cyberduck.io/).
-
-For larger data transfers, see Hummingbird's Globus recommendations: https://hummingbird.ucsc.edu/documentation/
-
-<br/>
-
-## Efficiency
-
-You can see how efficient your Slurm jobs were using the following command: `seff <job_id>`.
-
-Let's inspect one of my recent jobs. This is a different job from the one above. Note that the `seff` command typically doesn't work while a job is still running.
-
-```
-seff 398476_150
-```
-
-```
-Job ID: 402098
-Array Job ID: 398476_150
-Cluster: hbhpc
-User/Group: mglasena/ucsc_p_all_usr
-State: COMPLETED (exit code 0)
-Nodes: 1
-Cores per node: 8
-CPU Utilized: 1-06:23:41
-CPU Efficiency: 80.49% of 1-13:45:44 core-walltime
-Job Wall-clock time: 04:43:13
-Memory Utilized: 26.46 GB
-Memory Efficiency: 66.15% of 40.00 GB
-```
-
-**Memory Utilized.** Array task 150 of Slurm job 398476 only used 26.46 GB of RAM. Next time I run a similar job, I can reduce requested RAM from 40.00 GB to 30.00 GB.
-
-**CPU Efficiency** is the amount of time the requested CPUs were actively doing work relative to the amount of time they were idle. In this case, 80% of the reserved CPU time was actively used for computations, and the remaining ~20% was idle. This is fairly efficient, but next time I could consider requesting slightly fewer CPUs. Note that CPU usage can vary drastically during the job if you have multiple commands in your Slurm job. Efficiency will be low when only one or a few steps require many CPUs, and the other steps cannot make use of multiple CPUs.
-
-<br/>
-
-## Permissions
+## 14. Permissions
 
 Say you write a quick bash script that prints "Hello World" using the echo command.
 
@@ -873,13 +863,17 @@ Hello World
 
 <br/>
 
-## Array Jobs
+# Part IV. Scaling Up
+
+## 15. Array Jobs
 
 Array jobs are a powerful feature of Slurm that let you run many similar jobs in parallel, each with a different input or task index. Instead of writing and submitting 30 separate Slurm scripts or running one Slurm script with a for loop, you can submit one script with `--array=0-29` and let Slurm manage the parallelism.
 
 This is especially useful when you need to run the same analysis (e.g., samtools view, python3 script.py) across multiple input files or samples.
 
-### The Basic Pattern
+The examples below use the lab-colibri partition on Elkhorn.
+
+### 15.1 The Basic Pattern
 
 Each array task gets its own number in `$SLURM_ARRAY_TASK_ID`. Your script uses that number to pick its input.
 
@@ -925,7 +919,7 @@ print(f"Processing {sample_name}")
 > [!IMPORTANT]
 > Make sure `--array=0-N` in your Slurm script matches the number of items you're looping over. With 0-based indexing, 100 samples need `--array=0-99`.
 
-### Worked Example
+### 15.2 Worked Example
 
 For example, let's say I have 33 mapped BAM files that I want to filter to only include primary alignments from chromosome 6 with MAPQ > 30.
 
@@ -1071,7 +1065,7 @@ A few notes:
 2. It's helpful to add print statements (e.g., `echo "Input BAM: $input_bam"`) for debugging purposes.
 3. The header flags `#SBATCH --output=samtools_%A_%a.out` and `#SBATCH --error=samtools_%A_%a.err` tell Slurm to create separate output and error files for each task, named `samtools_<job_id>_<array_task_id>`.
 
-### Array Jobs in Python
+### 15.3 Array Jobs in Python
 
 I don't like writing code in bash because the syntax is not very intuitive or human readable. When I cook up my own array jobs, I write a Python script to be executed inside the Slurm script.
 
@@ -1173,9 +1167,73 @@ if __name__ == "__main__":
 
 Here, I have neatly organized the different steps into functions that are called by `main()`. I highly recommend using Python to organize the different steps of a workflow into functions.
 
-<br/>
+## 16. Elkhorn Daily Tips
 
-## Troubleshooting
+### 16.1 Requeuing
+
+A windfall job on another lab's node is canceled when that lab needs the node. To have Slurm put the job back in the queue and run it again, add the requeue line to the header and source the requeue script at the start of your job.
+
+```bash
+# add SBATCH requeue line
+#SBATCH --requeue
+
+# source requeue script at the beginning of your executable
+source /software/scripts/utility/requeue.feature
+```
+
+### 16.2 Serial Jobs
+
+Some work runs in steps, where step 2 needs the output of step 1. Do not submit step 2 and hope that step 1 has finished. Tell Slurm to start step 2 only when step 1 finishes with no error.
+
+```bash
+# submit_pipeline.sh. Run it on the login node with: bash submit_pipeline.sh
+step1=$(sbatch --parsable step1_align.sh)
+step2=$(sbatch --parsable --dependency=afterok:$step1 --kill-on-invalid-dep=yes step2_call.sh)
+sbatch --dependency=afterok:$step2 --kill-on-invalid-dep=yes step3_summarize.sh
+```
+
+`--parsable` makes `sbatch` print only the job ID, so the script can save it. `--dependency=afterok:$step1` holds step 2 until step 1 ends with exit code 0. While it waits, `squeue` shows `(Dependency)` in the reason column.
+
+If step 1 fails, step 2 can never start. `--kill-on-invalid-dep=yes` cancels step 2 at once. Without it, step 2 stays in the queue with the reason `DependencyNeverSatisfied` until you cancel it.
+
+> [!IMPORTANT]
+> Slurm only knows that a step failed if the step script returns an error. Put `set -euo pipefail` near the top of each step script. Then any failed command, also inside a pipe, stops the script with an error, and the next step does not start.
+
+<details>
+<summary><b>Other dependency types</b></summary>
+
+| Dependency | The next job starts when |
+|---|---|
+| `afterok:<job_id>` | The job finished with no error |
+| `afterany:<job_id>` | The job finished, with or without an error |
+| `afternotok:<job_id>` | The job failed. Use this for a cleanup or alert job |
+| `afterok:<array_job_id>` | All tasks of the array finished with no error |
+| `aftercorr:<array_job_id>` | The same task number of the earlier array finished with no error. Task 5 of step 2 waits only for task 5 of step 1 |
+
+You can list more than one job, for example `--dependency=afterok:1234:1235`.
+
+</details>
+
+On windfall, a job that is canceled for the node owners did not finish with no error. With `--requeue` ([section 16.1](#161-requeuing)), the job keeps its job ID and runs again, and the next step keeps waiting for it.
+
+### 16.3 Downloading Large Files
+
+Downloads are limited by the network card, so distribute them across machines rather than cores. Slurm silently packs array tasks onto one node without `--exclusive`.
+
+<details>
+<summary><b>More detail</b></summary>
+
+- 17 array tasks with 4 CPUs each can all land on one 112-core node. Add `#SBATCH --exclusive` to get one task per node. Check where tasks run with `squeue -u <your_cruzid> -o '%.14i %.8T %M %N'`.
+- Compute nodes have a 1 Gb network link to the outside. A single download stream gets about 45 MB/s, so 3 or 4 streams fill one node.
+- Nodes 29 and 33 to 36 have a slower 100 Mb network link. For downloads, add `#SBATCH --exclude=node-29,node-33,node-34,node-35,node-36`.
+
+</details>
+
+### 16.4 Filesystem
+
+The cluster's shared filesystem has a fixed total I/O bandwidth, a ceiling on how much data it can read and write per second across all users. Every job that reads or writes files takes a share, so the speed any one job sees depends on how many other jobs hit the filesystem at the same time. Running more jobs in parallel spreads the same bandwidth thinner.
+
+## 17. Troubleshooting
 
 <details>
 <summary><b>My job stays in the queue (PD) for a long time</b></summary>
@@ -1187,7 +1245,7 @@ Look at the `NODELIST(REASON)` column of `squeue -u <your_cruzid>`. `Resources` 
 <details>
 <summary><b>My job ended early</b></summary>
 
-Run `seff <job_id>` and read the `.err` file. `OUT_OF_MEMORY` means the job used more than `--mem`, so ask for more. `TIMEOUT` means it hit `--time`. On windfall, the job may have been stopped for the node owners. With `--requeue`, it goes back in the queue on its own.
+Run `seff <job_id>` and read the `.err` file. `OUT_OF_MEMORY` means the job used more than `--mem`, so ask for more. `TIMEOUT` means it hit `--time`. On windfall, the job may have been stopped for the node owners. See [section 16.1](#161-requeuing).
 
 </details>
 
@@ -1201,38 +1259,39 @@ Your job does not see the same environment as your login shell. Load the module 
 <details>
 <summary><b><code>Permission denied</code> when I run a script</b></summary>
 
-The file is not executable. See [Permissions](#permissions). Or run it with `bash script.sh`.
+The file is not executable. See [section 14](#14-permissions). Or run it with `bash script.sh`.
 
 </details>
 
 <details>
 <summary><b><code>No such file or directory</code> for a path that I know exists</b></summary>
 
-Check that you do not use the old `/hb/scratch` path. Use `/scratch/<your_cruzid>`. Also check that the path is the same on the compute node with `ls` inside an `salloc` session.
+Check that you use `/scratch/<your_cruzid>`, not `/hb/scratch`. `/hb/scratch` exists only on the login nodes. Also, `/data/colibri` is not mounted on the windfall nodes. Check a path on a compute node with `ls` inside an `salloc` session.
 
 </details>
 
 <details>
 <summary><b>All my array tasks run on one node</b></summary>
 
-Slurm packs tasks onto one node when they fit. That is fine for most jobs. If each task needs its own node, add `#SBATCH --exclusive`.
+Slurm packs tasks onto one node when they fit. That is fine for most jobs. If each task needs its own node, add `#SBATCH --exclusive`. See [section 16.2](#163-downloading-large-files).
 
 </details>
 
 <br/>
 
-## Getting Help
+# Cheat Sheet
 
-Learn more about Slurm at:
-
-1. Hummingbird homepage, https://hummingbird.ucsc.edu/, and the Hummingbird Getting Started page, https://hummingbird.ucsc.edu/getting-started/
-2. Stanford Slurm tutorial: https://login.scg.stanford.edu/tutorials/job_scripts/
-3. ChatGPT
-
-If you are a regular user, you should join the Hummingbird Slack community: https://ucschummingbi-lph3072.slack.com/join/shared_invite/zt-19mbwqvx1-GqguQcumVBLss~nzjOHAYg#/shared-invite/email
-
-The Hummingbird team also has weekly office hours on Thursday from 1:00 PM to 2:00 PM via Zoom: https://hummingbird.ucsc.edu/documentation/hummingbird-open-office-hour/
-
-You can also put in a ticket by emailing hummingbird@ucsc.edu.
-
-You can monitor cluster usage at https://hummingbird.ucsc.edu/current-usage/
+| Task | Command |
+|---|---|
+| Log in to Hummingbird (VPN if off campus) | `ssh <your_cruzid>@hb.ucsc.edu` |
+| Log in to Elkhorn | `ssh <your_cruzid>@elkhorn.ucsc.edu` |
+| Go to scratch | `cd /scratch/<your_cruzid>` |
+| See the partitions | `sinfo` |
+| See your jobs | `squeue -u <your_cruzid>` |
+| See one job in detail | `scontrol show job <job_id>` |
+| Submit a job | `sbatch my_job.sh` |
+| Cancel a job | `scancel <job_id>` |
+| Get an interactive node | `salloc -p windfall --cpus-per-task 12 --mem=40G --time=4:00:00` on Elkhorn |
+| Check a finished job | `seff <job_id>` |
+| Find installed software | `module avail` |
+| Make a script executable | `chmod a+x script.sh` |
